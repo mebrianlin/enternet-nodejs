@@ -1,10 +1,12 @@
 // modules =================================================
-var express        = require('express');
-var app            = express();
-var path           = require('path');
-var mongoose       = require('mongoose');
-var bodyParser     = require('body-parser');
+var express = require('express');
+var app = express();
+var path = require('path');
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
+var mqttBroker = require('./app/models/mqttBroker')();
+var mqttClient = require('./app/models/mqttClient')();
 
 // configuration ===========================================
 
@@ -12,7 +14,15 @@ var methodOverride = require('method-override');
 var db = require('./config/db');
 
 var port = process.env.PORT || 8080; // set our port
+var mqttPort = process.env.MQTT_PORT || 1883;
 // mongoose.connect(db.url); // connect to our mongoDB database (commented out after you enter in your own credentials)
+
+// spin up the mqtt broker
+mqttBroker.listen(mqttPort);
+
+// mqttClient.connect('mqtt://test.mosquitto.org');
+// mqttClient.connect('mqtt://localhost');
+mqttClient.connect('mqtt://localhost');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'public'));
@@ -33,4 +43,5 @@ require('./app/routes')(app); // pass our application into our routes
 // start app ===============================================
 app.listen(port);
 console.log('Listening on port ' + port);  // shoutout to the user
-exports = module.exports = app;            // expose app
+
+exports = module.exports = app; // expose app
