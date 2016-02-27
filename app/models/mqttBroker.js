@@ -1,5 +1,5 @@
-var mqtt    = require('mqtt');
-var util = require('util');
+var mqtt = require('mqtt');
+var logger = require('./logger');
 
 module.exports = function() {
     return new mqtt.Server(function(client) {
@@ -11,15 +11,14 @@ module.exports = function() {
         client.on('connect', function(packet) {
             self.clients[packet.clientId] = client;
             client.id = packet.clientId;
-            console.log("CONNECT: client id: " + client.id);
+            logger.log('mqtt', 'CONNECT: client id:' + client.id);
             client.subscriptions = [];
             client.connack({returnCode: 0});
         });
 
         client.on('subscribe', function(packet) {
             var granted = [];
-
-            console.log("SUBSCRIBE(%s): %j", client.id, packet);
+            logger.log('mqtt', 'SUBSCRIBE: %s -> %s', client.id, packet.topic, packet);
 
             for (var i = 0; i < packet.subscriptions.length; i++) {
                 var qos = packet.subscriptions[i].qos
@@ -34,7 +33,7 @@ module.exports = function() {
         });
 
         client.on('publish', function(packet) {
-            console.log("PUBLISH(%s): %j", client.id, packet);
+            logger.log('mqtt', 'PUBLISH: %s -> %s', client.id, packet.topic, packet);
             for (var k in self.clients) {
                 var c = self.clients[k];
 
@@ -50,7 +49,7 @@ module.exports = function() {
         });
 
         client.on('pingreq', function(packet) {
-            console.log('PINGREQ(%s)', client.id);
+            logger.log('mqtt', 'PINGREQ: %s', client.id);
             client.pingresp();
         });
 
@@ -64,7 +63,7 @@ module.exports = function() {
 
         client.on('error', function(e) {
             client.stream.end();
-            console.log(e);
+            logger.error(e);
         });
     });
 }

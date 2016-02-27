@@ -1,4 +1,4 @@
-var mqtt    = require('mqtt');
+var mqtt = require('mqtt');
 
 module.exports = function() {
     var client;
@@ -9,20 +9,8 @@ module.exports = function() {
 
     function connect(url) {
         client = mqtt.connect(url);
-        client.on('connect', function () {
-            client.subscribe('enternet/mqtt');
-            setTimeout(function() {
-                client.publish('enternet/mqtt', 'This is not a song');
-            }, 3000);
-            client.publish('enternet/mqtt', 'This is a song');
-        });
-
-        client.on('message', function (topic, message) {
-            // message is Buffer
-            console.log("topic:" + topic.toString());
-            console.log("message:" + message.toString());
-            // client.end();
-        });
+        client.on('connect', onConnect);
+        client.on('message', onMessage);
     }
 
     function end() {
@@ -30,6 +18,22 @@ module.exports = function() {
             client.end();
             client = null;
         }
+    }
+
+    function onConnect() {
+        // client.subscribe('ball/#');
+        client.subscribe('etc_topic');
+        setTimeout(function() {
+            client.publish('ball/1', 'This is not a song');
+        }, 3000);
+        client.publish('etc_topic', 'This is s song');
+    }
+
+    function onMessage(topic, message) {
+        // message is Buffer
+        console.log("topic:" + topic.toString());
+        console.log("message:" + message.toString());
+        // client.end();
     }
 }
 

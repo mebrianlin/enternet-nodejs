@@ -5,6 +5,7 @@ var path = require('path');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
+var logger = require('./app/models/logger');
 var mqttBroker = require('./app/models/mqttBroker')();
 var mqttClient = require('./app/models/mqttClient')();
 
@@ -21,7 +22,6 @@ var mqttPort = process.env.MQTT_PORT || 1883;
 mqttBroker.listen(mqttPort);
 
 // mqttClient.connect('mqtt://test.mosquitto.org');
-// mqttClient.connect('mqtt://localhost');
 mqttClient.connect('mqtt://localhost');
 
 // view engine setup
@@ -42,6 +42,6 @@ require('./app/routes')(app); // pass our application into our routes
 
 // start app ===============================================
 app.listen(port);
-console.log('Listening on port ' + port);  // shoutout to the user
+logger.info('Listening on port ' + port);  // shoutout to the user
 
 exports = module.exports = app; // expose app
