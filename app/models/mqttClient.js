@@ -22,17 +22,17 @@ module.exports = function() {
 
     function onConnect() {
         // client.subscribe('ball/#');
-        client.subscribe('etc_topic');
+        client.subscribe('mqtt/demo');
         setTimeout(function() {
-            client.publish('ball/1', 'This is not a song');
+            client.publish('mqtt/demo', 'This is not a song');
         }, 3000);
-        client.publish('etc_topic', 'This is s song');
+        client.publish('mqtt/demo', 'This is s song');
     }
 
     function onMessage(topic, message) {
         // message is Buffer
-        console.log("topic:" + topic.toString());
-        console.log("message:" + message.toString());
+        console.log("topic: " + topic.toString());
+        console.log("message: " + message.toString());
         // client.end();
     }
 }

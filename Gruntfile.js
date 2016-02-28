@@ -1,6 +1,18 @@
 module.exports = function(grunt) {
     grunt.initConfig({
         // JS TASKS ================================================================
+        webpack: {
+            mqtt: {
+                entry: './node_modules/mqtt/mqtt.js',
+                output: {
+                    path: 'public/dist/js/',
+                    filename: 'browserMqtt.js',
+                    library: 'mqtt'
+                },
+                progress: false,
+            },
+        },
+
         // check all js files for errors
         jshint: {
             all: ['public/src/js/**/*.js']
@@ -10,7 +22,8 @@ module.exports = function(grunt) {
         uglify: {
             build: {
                 files: {
-                    'public/dist/js/app.min.js': ['public/src/js/**/*.js', 'public/src/js/*.js']
+                    'public/dist/js/app.min.js': ['public/src/js/**/*.js', 'public/src/js/*.js'],
+                    'public/dist/js/browserMqtt.min.js': 'public/dist/js/browserMqtt.js'
                 }
             }
         },
@@ -66,6 +79,7 @@ module.exports = function(grunt) {
         }
     });
 
+    grunt.loadNpmTasks('grunt-webpack');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-less');
@@ -74,5 +88,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-nodemon');
     grunt.loadNpmTasks('grunt-concurrent');
 
-    grunt.registerTask('default', ['less', 'cssmin', 'jshint', 'uglify', 'concurrent']);
+    grunt.registerTask('default', ['less', 'cssmin', 'webpack', 'jshint', 'uglify', 'concurrent']);
 };

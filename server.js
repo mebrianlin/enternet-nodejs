@@ -6,23 +6,23 @@ var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var logger = require('./app/models/logger');
-var mqttBroker = require('./app/models/mqttBroker')();
 var mqttClient = require('./app/models/mqttClient')();
+var ports = require('./app/config.js').ports;
 
 // configuration ===========================================
 
 // config files
 var db = require('./config/db');
 
-var port = process.env.PORT || 8080; // set our port
-var mqttPort = process.env.MQTT_PORT || 1883;
+var port = process.env.PORT || ports.httpPort; // set our port
+var mqttPort = ports.mqttPort;
 // mongoose.connect(db.url); // connect to our mongoDB database (commented out after you enter in your own credentials)
 
 // spin up the mqtt broker
-mqttBroker.listen(mqttPort);
+require('./app/models/mqttBroker')();
 
 // mqttClient.connect('mqtt://test.mosquitto.org');
-mqttClient.connect('mqtt://localhost');
+mqttClient.connect('mqtt://localhost:' + mqttPort.toString());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'public'));

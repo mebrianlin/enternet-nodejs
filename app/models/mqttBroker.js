@@ -1,142 +1,127 @@
 var mqtt = require('mqtt');
+var mosca = require('mosca');
 var logger = require('./logger');
+var ports = require('../config.js').ports;
 
 module.exports = function() {
-    return new mqtt.Server(function(client) {
-        var self = this;
 
-        if (!self.clients)
-            self.clients = {};
+    var settings = {
+        http: {
+            port: ports.wsPort,
+            bundle: true,
+            static: './'
+        },
+        mqtt: {
+            port: ports.mqttWsPort
+        }
+    };
 
-        client.on('connect', function(packet) {
-            self.clients[packet.clientId] = client;
-            client.id = packet.clientId;
-            logger.log('mqtt', 'CONNECT: client id:' + client.id);
-            client.subscriptions = [];
-            client.connack({returnCode: 0});
-        });
+    //here we start mosca
+    var server = new mosca.Server(settings);
+    server.on('ready', setup);
 
-        client.on('subscribe', function(packet) {
-            var granted = [];
-            logger.log('mqtt', 'SUBSCRIBE: %s -> %s', client.id, packet.topic, packet);
+    // fired when the mqtt server is ready
+    function setup() {
+        logger.log('mqtt', 'Mosca server is up and running')
+    }
 
-            for (var i = 0; i < packet.subscriptions.length; i++) {
-                var qos = packet.subscriptions[i].qos
-                    , topic = packet.subscriptions[i].topic
-                    , reg = new RegExp(topic.replace('+', '[^\/]+').replace('#', '.+') + '$');
-
-                granted.push(qos);
-                client.subscriptions.push(reg);
-            }
-
-            client.suback({messageId: packet.messageId, granted: granted});
-        });
-
-        client.on('publish', function(packet) {
-            logger.log('mqtt', 'PUBLISH: %s -> %s', client.id, packet.topic, packet);
-            for (var k in self.clients) {
-                var c = self.clients[k];
-
-                for (var i = 0; i < c.subscriptions.length; i++) {
-                    var s = c.subscriptions[i];
-
-                    if (s.test(packet.topic)) {
-                        c.publish({topic: packet.topic, payload: packet.payload});
-                        break;
-                    }
-                }
-            }
-        });
-
-        client.on('pingreq', function(packet) {
-            logger.log('mqtt', 'PINGREQ: %s', client.id);
-            client.pingresp();
-        });
-
-        client.on('disconnect', function(packet) {
-            client.stream.end();
-        });
-
-        client.on('close', function(packet) {
-            delete self.clients[client.id];
-        });
-
-        client.on('error', function(e) {
-            client.stream.end();
-            logger.error(e);
-        });
+    // fired whena  client is connected
+    server.on('clientConnected', function(client) {
+        logger.log('mqtt', 'CONNECT: client id:' + client.id);
     });
-}
 
-// module.exports = {
-//     start: start,
-//     url: 'mqtt://localhost' + (port ? (':' + port) : '')
-// };
+    // fired when a message is received
+    server.on('published', function(packet, client) {
+        if (client) {
+            logger.log('mqtt', 'PUBLISHED: %s -> %s', client.id, packet.topic);
+            logger.log('mqtt', packet.payload.toString());
+        }
+    });
 
-function start(port) {
-    new mqtt.Server(function(client) {
-        var self = this;
+    // fired when a client subscribes to a topic
+    server.on('subscribed', function(topic, client) {
+        logger.log('mqtt', 'SUBSCRIBE: %s -> %s', client.id, topic);
+    });
 
-        if (!self.clients)
-            self.clients = {};
+    // fired when a client subscribes to a topic
+    server.on('unsubscribed', function(topic, client) {
+        logger.log('mqtt', 'UNSUBSCRIBE: %s -> %s', client.id, topic);
+    });
 
-        client.on('connect', function(packet) {
-            self.clients[packet.clientId] = client;
-            client.id = packet.clientId;
-            console.log("CONNECT: client id: " + client.id);
-            client.subscriptions = [];
-            client.connack({returnCode: 0});
-        });
+    // fired when a client is disconnecting
+    server.on('clientDisconnecting', function(client) {
+        logger.log('mqtt', 'DISCONNECTING: %s', client.id);
+    });
 
-        client.on('subscribe', function(packet) {
-            var granted = [];
+    // fired when a client is disconnected
+    server.on('clientDisconnected', function(client) {
+        logger.log('mqtt', 'DISCONNECTED: %S', client.id);
+    });
+};
 
-            console.log("SUBSCRIBE(%s): %j", client.id, packet);
+// module.exports = function(port) {
+//     return new mqtt.Server(function(client) {
+//         var self = this;
 
-            for (var i = 0; i < packet.subscriptions.length; i++) {
-                var qos = packet.subscriptions[i].qos
-                    , topic = packet.subscriptions[i].topic
-                    , reg = new RegExp(topic.replace('+', '[^\/]+').replace('#', '.+') + '$');
+//         if (!self.clients)
+//             self.clients = {};
 
-                granted.push(qos);
-                client.subscriptions.push(reg);
-            }
+//         client.on('connect', function(packet) {
+//             self.clients[packet.clientId] = client;
+//             client.id = packet.clientId;
+//             logger.log('mqtt', 'CONNECT: client id:' + client.id);
+//             client.subscriptions = [];
+//             client.connack({returnCode: 0});
+//         });
 
-            client.suback({messageId: packet.messageId, granted: granted});
-        });
+//         client.on('subscribe', function(packet) {
+//             var granted = [];
+//             logger.log('mqtt', 'SUBSCRIBE: %s -> %s', client.id, packet.topic, packet);
 
-        client.on('publish', function(packet) {
-            console.log("PUBLISH(%s): %j", client.id, packet);
-            for (var k in self.clients) {
-                var c = self.clients[k];
+//             for (var i = 0; i < packet.subscriptions.length; i++) {
+//                 var qos = packet.subscriptions[i].qos
+//                     , topic = packet.subscriptions[i].topic
+//                     , reg = new RegExp(topic.replace('+', '[^\/]+').replace('#', '.+') + '$');
 
-                for (var i = 0; i < c.subscriptions.length; i++) {
-                    var s = c.subscriptions[i];
+//                 granted.push(qos);
+//                 client.subscriptions.push(reg);
+//             }
 
-                    if (s.test(packet.topic)) {
-                        c.publish({topic: packet.topic, payload: packet.payload});
-                        break;
-                    }
-                }
-            }
-        });
+//             client.suback({messageId: packet.messageId, granted: granted});
+//         });
 
-        client.on('pingreq', function(packet) {
-            console.log('PINGREQ(%s)', client.id);
-            client.pingresp();
-        });
+//         client.on('publish', function(packet) {
+//             logger.log('mqtt', 'PUBLISH: %s -> %s', client.id, packet.topic, packet);
+//             for (var k in self.clients) {
+//                 var c = self.clients[k];
 
-        client.on('disconnect', function(packet) {
-            client.stream.end();
-        });
+//                 for (var i = 0; i < c.subscriptions.length; i++) {
+//                     var s = c.subscriptions[i];
 
-        client.on('close', function(packet) {
-            delete self.clients[client.id];
-        });
+//                     if (s.test(packet.topic)) {
+//                         c.publish({topic: packet.topic, payload: packet.payload});
+//                         break;
+//                     }
+//                 }
+//             }
+//         });
 
-        client.on('error', function(e) {
-            client.stream.end();
-            console.log(e);
-        });
-    }).listen(port);
-}
+//         client.on('pingreq', function(packet) {
+//             logger.log('mqtt', 'PINGREQ: %s', client.id);
+//             client.pingresp();
+//         });
+
+//         client.on('disconnect', function(packet) {
+//             client.stream.end();
+//         });
+
+//         client.on('close', function(packet) {
+//             delete self.clients[client.id];
+//         });
+
+//         client.on('error', function(e) {
+//             client.stream.end();
+//             logger.error(e);
+//         });
+//     }).listen(port);
+// }

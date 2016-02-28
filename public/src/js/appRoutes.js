@@ -12,7 +12,7 @@ angular.module('appRoutes', [])
         controller: 'httpController'
     })
     .when('/mqtt', {
-        templateUrl: 'views/mainBody.html',
+        templateUrl: 'views/mqtt.html',
         controller: 'mqttController'
     })
     .otherwise({
