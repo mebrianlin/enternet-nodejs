@@ -22,11 +22,11 @@ module.exports = function() {
 
     function onConnect() {
         // client.subscribe('ball/#');
-        client.subscribe('mqtt/demo');
+        client.subscribe('etc_topic');
         setTimeout(function() {
-            client.publish('mqtt/demo', 'This is not a song');
+            client.publish('etc_get', 'This is not a song');
         }, 3000);
-        client.publish('mqtt/demo', 'This is s song');
+        client.publish('etc_get', 'This is s song');
     }
 
     function onMessage(topic, message) {

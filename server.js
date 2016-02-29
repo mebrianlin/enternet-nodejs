@@ -21,8 +21,8 @@ var mqttPort = ports.mqttPort;
 // spin up the mqtt broker
 require('./app/models/mqttBroker')();
 
-// mqttClient.connect('mqtt://test.mosquitto.org');
-mqttClient.connect('mqtt://localhost:' + mqttPort.toString());
+mqttClient.connect('mqtt://test.mosquitto.org');
+// mqttClient.connect('mqtt://localhost:' + mqttPort.toString());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'public'));
