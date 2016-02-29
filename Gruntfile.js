@@ -1,21 +1,22 @@
 module.exports = function(grunt) {
     grunt.initConfig({
         // JS TASKS ================================================================
-        webpack: {
-            mqtt: {
-                entry: './node_modules/mqtt/mqtt.js',
-                output: {
-                    path: 'public/dist/js/',
-                    filename: 'browserMqtt.js',
-                    library: 'mqtt'
+        browserify: {
+            dist: {
+                files: {
+                    'public/dist/js/bundle.js': ['node_modules/mqtt/mqtt.js']
                 },
-                progress: false,
-            },
+                options: {
+                    browserifyOptions: {
+                        standalone: 'mqtt'
+                    }
+                }
+            }
         },
 
         // check all js files for errors
         jshint: {
-            all: ['public/src/js/**/*.js']
+            all: ['Gruntfile.js', 'public/src/js/**/*.js']
         },
 
         // take all the js files and minify them into app.min.js
@@ -23,7 +24,7 @@ module.exports = function(grunt) {
             build: {
                 files: {
                     'public/dist/js/app.min.js': ['public/src/js/**/*.js', 'public/src/js/*.js'],
-                    'public/dist/js/browserMqtt.min.js': 'public/dist/js/browserMqtt.js'
+                    'public/dist/js/bundle.min.js': 'public/dist/js/bundle.js'
                 }
             }
         },
@@ -59,7 +60,7 @@ module.exports = function(grunt) {
             },
             js: {
                 files: ['public/src/js/**/*.js', 'public/src/js/*.js'],
-                tasks: ['jshint', 'uglify']
+                tasks: ['jshint', 'browserify', 'uglify']
             }
         },
 
@@ -79,7 +80,7 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.loadNpmTasks('grunt-webpack');
+    grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-less');
@@ -88,5 +89,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-nodemon');
     grunt.loadNpmTasks('grunt-concurrent');
 
-    grunt.registerTask('default', ['less', 'cssmin', 'webpack', 'jshint', 'uglify', 'concurrent']);
+    grunt.registerTask('default', ['less', 'cssmin', 'browserify', 'jshint', 'uglify', 'concurrent']);
 };
