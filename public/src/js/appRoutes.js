@@ -15,6 +15,10 @@ angular.module('appRoutes', [])
         templateUrl: 'views/mqtt.html',
         controller: 'mqttController'
     })
+    .when('/wifi', {
+        templateUrl: 'views/wifi.html',
+        controller: 'wifiController'
+    })
     .otherwise({
         templateUrl: 'views/error.html'
     });

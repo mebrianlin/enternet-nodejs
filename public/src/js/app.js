@@ -3,5 +3,6 @@ angular.module('iotApp', [
     'appRoutes',
     'mainCtrl',
     'httpCtrl',
-    'mqttCtrl'
+    'mqttCtrl',
+    'wifiCtrl'
 ]);

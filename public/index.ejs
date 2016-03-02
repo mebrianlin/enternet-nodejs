@@ -13,15 +13,17 @@
         <!-- JS -->
         <script src="libs/angular/angular.min.js"></script>
         <script src="libs/angular-route/angular-route.min.js"></script>
+        <script src="libs/angular-bootstrap/ui-bootstrap.min.js"></script>
 
         <!-- BROWSERIFY BUNDLE -->
         <script src="dist/js/bundle.min.js"></script>
         <!-- ANGULAR CUSTOM -->
         <script src="dist/js/app.min.js"></script>
+
+        <script>var mqttBrokers = <%- JSON.stringify(mqttBrokers) %></script>
     </head>
     <body ng-app="iotApp" ng-controller="mainController">
         <div class="container">
-
             <!-- HEADER -->
             <nav class="navbar navbar-inverse">
                 <div class="navbar-header">
@@ -32,6 +34,9 @@
                 </ul>
                 <ul class="nav navbar-nav">
                     <li><a href="/mqtt">MQTT</a></li>
+                </ul>
+                <ul class="nav navbar-nav">
+                    <li><a href="/wifi">WiFi</a></li>
                 </ul>
             </nav>
 

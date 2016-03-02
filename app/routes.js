@@ -1,4 +1,5 @@
 var csv = require('./models/csv');
+var config = require('./config');
 
 module.exports = function(app) {
     // server routes ===========================================================
@@ -21,7 +22,9 @@ module.exports = function(app) {
     app.get('*', function(req, res) {
         console.log(req.method, req.path);
         // res.sendfile('./public/index.html');
-        res.render('index');
+        res.render('index', {
+            mqttBrokers: config.mqttBrokers
+        });
     });
 
     // catch 404 and forward to error handler
