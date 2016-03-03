@@ -1,55 +1,56 @@
 angular.module('mqttCtrl', [])
 .controller('mqttController', ['$scope', '$window', function($scope, $window) {
-    $scope.subscribedMsgs = [];
-    $scope.publishTopic = $scope.subscribedTopic = '/example';
-    var subscribedTopic = '';
+    $scope.subscribedMsgs = {};
+    $scope.publishTopic = $scope.subscribedTopic = '/etc_get';
 
     $scope.mqttBrokers = $window.mqttBrokers;
     var client;
 
     $scope.selectBroker = function(broker) {
         $scope.mqttBroker = broker;
-        console.log(broker);
     };
 
-    function connect(url) {
-        if (client)
-            client.end();
+    $scope.connect = function(url) {
+        $scope.mqttConnecting = true;
+        $scope.disconnect();
+        $scope.subscribedMsgs = {};
         client = mqtt.connect(url);
-        client.on("message", function(topic, payload) {
-            console.log([topic, payload].join(': '));
+        client.on('message', function(topic, payload) {
+            // console.log([topic, payload].join(': '));
             $scope.$apply(function() {
-                $scope.subscribedMsgs.push(payload.toString());
+                $scope.subscribedMsgs[topic] = {
+                    payload: payload.toString(),
+                    time: moment().format('HH:mm:ss')
+                };
             });
-            // console.log(client.unsubscribe);
-            // client.end();
         });
-    }
+        client.on('connect', function(connack) {
+            $scope.$apply(function() {
+                $scope.mqttConnected = true;
+                $scope.mqttConnecting = false;
+            });
+            console.log('connect');
+        });
+        client.on('close', function(topic, payload) {
+            $scope.$apply(function() {
+                $scope.mqttConnected = false;
+                $scope.mqttConnecting = false;
+            });
+        });
+    };
 
-    // var client = mqtt.connect('ws://localhost:3000');
-    // var client = mqtt.connect('ws://test.mosquitto.org:8080/mqtt');
-    // var client = mqtt.connect('ws://try:try@broker.shiftr.io');
-
-    // client.on("message", function(topic, payload) {
-    //     console.log([topic, payload].join(': '));
-    //     $scope.$apply(function() {
-    //         $scope.subscribedMsgs.push(payload.toString());
-    //     });
-    //     // console.log(client.unsubscribe);
-    //     // client.end();
-    // });
+    $scope.disconnect = function() {
+        if (client) {
+            client.end();
+            client = null;
+        }
+    };
 
     $scope.subscribe = function(topic) {
-        if (subscribedTopic)
-            client.unsubscribe(subscribedTopic);
-        subscribedTopic = topic;
         client.subscribe(topic);
     };
+
     $scope.publish = function(topic, payload) {
         client.publish(topic, payload);
-    };
-
-    $scope.remove = function(index) {
-        $scope.subscribedMsgs.splice(index, 1);
     };
 }]);

@@ -1,18 +1,48 @@
 <!-- <div class="jumbotron text-center"> -->
-<div class="col-sm-6">
-    <form>
-        <div class="form-group row">
-            <fieldset class="well the-fieldset">
-                <legend class="the-legend">Your legend</legend>
-                ... your inputs ...
-            </fieldset>
+<div class="col-sm-12">
+    <form class="form-inline">
+        <div class="form-group">
+            <label class="form-control-label">Broker</label>
+            <div class="btn-group" uib-dropdown>
+                <button id="single-button" type="button" ng-disabled="mqttConnecting || mqttConnected"
+                        class="form-control btn btn-default dropdown-toggle" uib-dropdown-toggle>
+                    {{mqttBroker || 'Please select a broker'}} <span class="caret"></span>
+                </button>
+                <ul uib-dropdown-menu aria-labelledby="single-button">
+                    <li ng-repeat="(name, broker) in mqttBrokers" ng-click="selectBroker(broker.wsUrl)">
+                        <a href="#">{{broker.wsUrl}}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-success" ng-hide="mqttConnecting || mqttConnected"
+                    ng-disabled="!mqttBroker" ng-click="connect(mqttBroker)">
+                Connect
+            </button>
+            <button type="submit" class="btn btn-success" ng-show="mqttConnecting"
+                    disabled ng-click="connect(mqttBroker)">
+                Connecting...
+            </button>
+            <button type="submit" class="btn btn-success" ng-show="mqttConnected"
+                    ng-click="disconnect()">
+                Disconnect
+            </button>
+        </div>
 
+        <hr>
+
+       <!--  <div class="form-group">
             <label class="col-sm-2 form-control-label">Broker</label>
             <div class="col-sm-10">
                 <div class="btn-group" uib-dropdown>
                     <button id="single-button" type="button" class="btn btn-default dropdown-toggle" uib-dropdown-toggle>
                     {{mqttBroker || 'Please select a broker'}} <span class="caret"></span>
                     </button>
+
+                    <input id="single-button" type="text" class="btn btn-default dropdown-toggle" uib-dropdown-toggle placeholder="Please select a broker"
+                    ng-model="mqttBroker"><span class="caret"></span>
+
                     <ul uib-dropdown-menu aria-labelledby="single-button">
                         <li ng-repeat="(name, broker) in mqttBrokers" ng-click="selectBroker(broker.wsUrl)">
                             <a href="#">{{broker.wsUrl}}</a>
@@ -20,10 +50,14 @@
                     </ul>
                 </div>
             </div>
-        </div>
+        </div> -->
+    </form>
+</div>
+<div class="col-sm-6">
+    <form>
         <div class="form-group row">
             <label for="publishTopic" class="col-sm-2 form-control-label">Topic</label>
-            <div class="col-sm-8">
+            <div class="col-sm-10">
                 <input type="text" class="form-control col-sm-2" id="publishTopic"
                        placeholder="Topic" ng-model="publishTopic">
             </div>
@@ -39,7 +73,7 @@
         <div class="form-group row">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-success"
-                        ng-disabled="!mqttBroker || !publishTopic || !publishMsg"
+                        ng-disabled="!mqttConnected || !publishTopic || !publishMsg"
                         ng-click="publish(publishTopic, publishMsg)">
                     Publish
                 </button>
@@ -50,13 +84,6 @@
 <div class="col-sm-6">
     <form>
         <div class="form-group row">
-            <fieldset class="well the-fieldset">
-                <legend class="the-legend">Your legend</legend>
-                ... your inputs ...
-            </fieldset>
-        </div>
-
-        <div class="form-group row">
             <label for="subscribeTopic" class="col-sm-2 form-control-label">Topic</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" id="subscribeTopic"
@@ -66,7 +93,7 @@
         <div class="form-group row">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-success"
-                        ng-disabled="!mqttBroker || !subscribedTopic"
+                        ng-disabled="!mqttConnected || !subscribedTopic"
                         ng-click="subscribe(subscribedTopic)">
                     Subscribe
                 </button>
@@ -74,10 +101,19 @@
         </div>
         <div class="form-group row">
             <ul>
-                <li ng-repeat="msg in subscribedMsgs track by $index">
-                    {{msg}}
+                <li ng-repeat="(topic, msg) in subscribedMsgs track by topic">
+                    {{topic}}: {{msg.time}} {{msg.payload}}
                 </li>
             </ul>
         </div>
+
+        <ul class="list-group">
+            <li ng-repeat="(topic, msg) in subscribedMsgs track by topic">
+                <fieldset class="well the-fieldset">
+                    <legend class="the-legend">{{topic}}</legend>
+                    {{msg.time}}: {{msg.payload}}
+                </fieldset>
+            </li>
+        </ul>
     </form>
 </div>

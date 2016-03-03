@@ -5,6 +5,7 @@
       "bootstrap": "latest",
       "angular": "latest",
       "angular-bootstrap": "latest",
-      "angular-route": "latest"
+      "angular-route": "latest",
+      "moment": "latest"
    }
 }
