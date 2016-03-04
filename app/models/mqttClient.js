@@ -24,19 +24,7 @@ module.exports = function() {
     }
 
     function onConnect() {
-        // client.subscribe('ball/#');
         client.subscribe(subscribeToTopic);
-        // setTimeout(function() {
-        //     client.publish('etc_get', 'This is not a song');
-        // }, 3000);
-        var isOn = true;
-        setInterval(function() {
-            if (isOn)
-                client.publish(publishToTopic, 'x');
-            else
-                client.publish(publishToTopic, 'y');
-            isOn = !isOn;
-        }, 1000);
     }
 
     function onMessage(topic, message) {

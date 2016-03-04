@@ -17,10 +17,23 @@ angular.module('mqttCtrl', [])
         client = mqtt.connect(url);
         client.on('message', function(topic, payload) {
             // console.log([topic, payload].join(': '));
+            var str = payload.toString();
+            var numbers = _(str.split(' ')).map(function(n) {
+                var number = parseInt(n);
+                if (number || number === 0) {
+                   var percentage = number * 100 / 32768 + 50;
+                   return {
+                       number: number,
+                       percentage: percentage
+                   };
+                }
+            }).compact().value();
+
             $scope.$apply(function() {
                 $scope.subscribedMsgs[topic] = {
-                    payload: payload.toString(),
-                    time: moment().format('HH:mm:ss')
+                    payload: str,
+                    time: moment().format('HH:mm:ss'),
+                    numbers: numbers
                 };
             });
         });
@@ -47,7 +60,14 @@ angular.module('mqttCtrl', [])
     };
 
     $scope.subscribe = function(topic) {
-        client.subscribe(topic);
+         client.subscribe(topic);
+    };
+
+    $scope.unsubscribe = function(topic) {
+         if ($scope.subscribedMsgs[topic]) {
+             client.unsubscribe(topic);
+             delete $scope.subscribedMsgs[topic];
+         }
     };
 
     $scope.publish = function(topic, payload) {
