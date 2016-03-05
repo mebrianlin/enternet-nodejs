@@ -2,7 +2,7 @@ var mqtt = require('mqtt');
 
 module.exports = function() {
     var client;
-    var subscribeToTopic = '/etc_get';
+    var subscribeToTopic = '/etc_topic';
     var publishToTopic = '/etc_get';
 
     return {
@@ -29,11 +29,13 @@ module.exports = function() {
 
     function onMessage(topic, message) {
         // message is Buffer
-        console.log("topic: " + topic);
-        console.log("message: " + message);
+        // console.log("topic: " + topic);
+        // console.log("message: " + message);
+        if (parseInt(message) < 50)
+            client.publish(publishToTopic, "red");
+        else
+            client.publish(publishToTopic, "green");
         // client.end();
     }
 }
-
-
 

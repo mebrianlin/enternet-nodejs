@@ -99,7 +99,9 @@
 
                           <span class="label label-default label-pill pull-xs-right">{{msg.time}}</span>
                           {{topic}}</h4>
-                       <p class="list-group-item-text">{{msg.payload}}</p>
+                       <p class="list-group-item-text" ng-style="{ 'background-color': msg.payload }">
+                           {{msg.payload}}
+                       </p>
                        <div class="progress" ng-repeat="number in msg.numbers">
                             <div class="progress-bar" role="progressbar"
                                  aria-valuenow="{{number.number}}"
