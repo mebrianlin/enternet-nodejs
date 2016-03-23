@@ -19,6 +19,10 @@ angular.module('appRoutes', [])
         templateUrl: 'views/wifi.html',
         controller: 'wifiController'
     })
+    .when('/triangle', {
+        templateUrl: 'views/triangle.html',
+        controller: 'triangleController'
+    })
     .otherwise({
         templateUrl: 'views/error.html'
     });

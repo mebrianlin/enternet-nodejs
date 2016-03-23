@@ -24,8 +24,10 @@
         "ejs": "~2.4.1",
         "mqtt": "~1.7.2",
         "winston": "~2.2.0",
+        "lodash": "~4.6.1",
         "moment": "~2.11.2",
-        "mosca": "~1.1.2"
+        "mosca": "~1.1.2",
+        "sylvester": "~0.0.21"
     },
     "devDependencies": {
         "grunt": "~0.4.5",

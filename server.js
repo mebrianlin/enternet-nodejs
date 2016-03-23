@@ -21,7 +21,9 @@ var mqttPort = config.ports.mqttPort;
 // spin up the mqtt broker
 require('./app/models/mqttBroker')();
 
-mqttClient.connect(config.mqttBrokers['shiftr'].mqttUrl);
+mqttClient.connect(config.mqttBrokers['shiftr'].mqttUrl, {
+   clientId: 'enternet'
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'public'));

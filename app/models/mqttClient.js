@@ -1,9 +1,18 @@
 var mqtt = require('mqtt');
+var path = require('path');
+var fs = require('fs');
+
+var topicHandler = {};
+var normalizedPath = path.join(__dirname, 'topic-handlers');
+fs.readdirSync(normalizedPath).forEach(function(file) {
+    var handler = require('./topic-handlers/' + file);
+    if (handler.topic && handler.handler) {
+        topicHandler[handler.topic] = handler.handler;
+    }
+});
 
 module.exports = function() {
     var client;
-    var subscribeToTopic = '/etc_topic';
-    var publishToTopic = '/etc_get';
 
     return {
         connect: connect,
@@ -24,18 +33,44 @@ module.exports = function() {
     }
 
     function onConnect() {
-        client.subscribe(subscribeToTopic);
+        for (var topic in topicHandler) {
+            if (topicHandler.hasOwnProperty(topic))
+                client.subscribe(topic);
+        }
+        // test();
+        // client.subscribe(subscribeToTopic);
     }
 
     function onMessage(topic, message) {
-        // message is Buffer
-        // console.log("topic: " + topic);
-        // console.log("message: " + message);
-        if (parseInt(message) < 50)
-            client.publish(publishToTopic, "red");
-        else
-            client.publish(publishToTopic, "green");
+        if (topicHandler[topic])
+            topicHandler[topic](client, message);
         // client.end();
     }
+
+    function test() {
+        setInterval(function() {
+            client.publish('ball/get', getPublishableColor(1, {
+                r: getRandomInt(0, 100),
+                g: getRandomInt(0, 100),
+                b: getRandomInt(0, 100)
+            }));
+        }, 500);
+    }
+};
+
+function getRandomInt(min, max) {
+    return 10 * Math.floor((
+        Math.floor(Math.random() * (max - min + 1)) + min) / 10);
 }
 
+function getPublishableColor(ballId, color) {
+    return ballId + ':' + zeroFill(color.r, 3) + ',' +
+        zeroFill(color.g, 3) + ',' + zeroFill(color.b, 3);
+}
+
+function zeroFill(number, size) {
+    number = number.toString();
+    while (number.length < size)
+        number = '0' + number;
+    return number;
+}

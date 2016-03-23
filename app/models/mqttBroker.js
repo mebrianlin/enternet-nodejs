@@ -22,7 +22,7 @@ module.exports = function() {
 
     // fired when the mqtt server is ready
     function setup() {
-        logger.log('mqtt', 'Mosca server is up and running')
+        logger.log('mqtt', 'Mosca server is up and running');
     }
 
     // fired whena  client is connected
