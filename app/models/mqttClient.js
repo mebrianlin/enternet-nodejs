@@ -1,5 +1,3 @@
-'use strict'
-
 var mqtt = require('mqtt');
 var path = require('path');
 var fs = require('fs');

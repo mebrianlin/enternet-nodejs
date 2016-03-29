@@ -1,5 +1,3 @@
-'use strict'
-
 var readline = require('readline');
 var path = require('path');
 var fs = require('fs');
@@ -18,7 +16,7 @@ var rl = readline.createInterface({
 
 rl.on('line', function(line) {
     ballsDump.push(JSON.parse(line));
-})
+});
 
 var intervalId;
 var interval = 1000;
