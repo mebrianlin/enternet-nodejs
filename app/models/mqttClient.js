@@ -1,8 +1,13 @@
+'use strict'
+
 var mqtt = require('mqtt');
 var path = require('path');
 var fs = require('fs');
 
-var mockDataSender = require('./mockDataSender');
+var titles = {
+    get: 'ball/get', // the title where the balls get the data
+    put: 'ball/put' // the title where the balls push the data
+};
 
 var topicHandler = {};
 var normalizedPath = path.join(__dirname, 'topic-handlers');
@@ -12,6 +17,15 @@ fs.readdirSync(normalizedPath).forEach(function(file) {
         if (!topicHandler[handler.topic])
             topicHandler[handler.topic] = [];
         topicHandler[handler.topic].push(handler.handler);
+    }
+});
+
+var helpers = [];
+normalizedPath = path.join(__dirname, 'helpers');
+fs.readdirSync(normalizedPath).forEach(function(file) {
+    var helper = require('./helpers/' + file);
+    if (helper.enabled) {
+        helpers.push(helper);
     }
 });
 
@@ -42,7 +56,9 @@ module.exports = function() {
             if (topicHandler.hasOwnProperty(topic))
                 client.subscribe(topic);
         }
-        mockDataSender.start(client);
+        for (var i = 0; i < helpers.length; ++i)
+            helpers[i].start(client, titles);
+
         // client.subscribe(subscribeToTopic);
     }
 
@@ -55,24 +71,8 @@ module.exports = function() {
     }
 
     function onClose(topic, message) {
-        mockDataSender.stop();
+        for (var i = 0; i < helpers.length; ++i)
+            helpers[i].stop();
         client = null;
     }
 };
-
-function getRandomInt(min, max) {
-    return 10 * Math.floor((
-        Math.floor(Math.random() * (max - min + 1)) + min) / 10);
-}
-
-function getPublishableColor(ballId, color) {
-    return ballId + ':' + zeroFill(color.r, 3) + ',' +
-        zeroFill(color.g, 3) + ',' + zeroFill(color.b, 3);
-}
-
-function zeroFill(number, size) {
-    number = number.toString();
-    while (number.length < size)
-        number = '0' + number;
-    return number;
-}
