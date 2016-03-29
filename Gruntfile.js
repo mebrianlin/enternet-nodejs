@@ -14,6 +14,19 @@ module.exports = function(grunt) {
             }
         },
 
+        copy: {
+            main: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'node_modules/',
+                        src: ['n3-charts/build/**', 'd3/d3.min.js'],
+                        dest: 'public/libs/'
+                    }
+                ]
+            }
+        },
+
         // check all js files for errors
         jshint: {
             all: ['Gruntfile.js', 'public/src/js/**/*.js', 'app/**/*.js']
@@ -81,6 +94,7 @@ module.exports = function(grunt) {
     });
 
     grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-less');
@@ -89,5 +103,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-nodemon');
     grunt.loadNpmTasks('grunt-concurrent');
 
-    grunt.registerTask('default', ['less', 'cssmin', 'browserify', 'jshint', 'uglify', 'concurrent']);
+    grunt.registerTask('default', ['less', 'cssmin', 'copy', 'browserify', 'jshint', 'uglify', 'concurrent']);
 };

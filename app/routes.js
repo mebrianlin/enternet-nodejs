@@ -1,5 +1,6 @@
 var csv = require('./models/csv');
 var config = require('./config');
+var ballHandler = require('./models/topic-handlers/ballHandler');
 
 module.exports = function(app) {
     // server routes ===========================================================
@@ -15,6 +16,12 @@ module.exports = function(app) {
         var data = req.params.data;
         csv.write(data);
         res.send(data);
+    });
+
+
+    app.get('/api/balls/get', function(req, res) {
+        var balls = ballHandler.getBalls();
+        res.send(balls);
     });
 
     // frontend routes =========================================================

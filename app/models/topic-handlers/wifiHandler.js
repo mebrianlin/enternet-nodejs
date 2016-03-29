@@ -2,6 +2,7 @@ var _ = require('lodash');
 
 var triangle = require('../triangle');
 var Ball = require('../ball');
+var color = require('../color');
 
 module.exports = {
    topic: 'ball/wifi',
@@ -25,6 +26,7 @@ module.exports = {
 // };
 
 var balls = {};
+var publishToTopic = 'ball/pos';
 
 function ballWifiHandler(client, message) {
     var str = message.toString();
@@ -32,10 +34,10 @@ function ballWifiHandler(client, message) {
 
     var ballId = ballData.id;
     if (!balls[ballId]) {
-        balls[ballId] = new Ball();
+        balls[ballId] = new Ball(color.Black);
     }
 
-    balls[ballId].update(ballData);
+    balls[ballId].updateMeasurement(ballData);
 
     // var distances = _.map(balls, distances);
     var distances = _.map(balls, function(b) {
@@ -77,5 +79,5 @@ function ballWifiHandler(client, message) {
             y: results[5]
         }
     };
-    client.publish('ball/pos', JSON.stringify(positions));
+    client.publish(publishToTopic, JSON.stringify(positions));
 }

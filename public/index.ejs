@@ -8,14 +8,24 @@
 
         <!-- CSS -->
         <link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="libs/angular-bootstrap-colorpicker/css/colorpicker.min.css">
+        <link rel="stylesheet" href="libs/angular-chart.js/dist/angular-chart.min.css">
+        <link rel="stylesheet" href="libs/n3-charts/build/LineChart.min.css">
         <link rel="stylesheet" href="dist/css/style.min.css"> <!-- custom styles -->
 
         <!-- JS -->
         <script src="libs/angular/angular.min.js"></script>
         <script src="libs/angular-route/angular-route.min.js"></script>
         <script src="libs/angular-bootstrap/ui-bootstrap.min.js"></script>
+        <script src="libs/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js"></script>
         <script src="libs/moment/min/moment.min.js"></script>
         <script src="libs/lodash/dist/lodash.min.js"></script>
+
+        <script src="libs/d3/d3.min.js"></script>
+        <script src="libs/n3-charts/build/LineChart.min.js"></script>
+
+        <script src="libs/Chart.js/Chart.min.js"></script>
+        <script src="libs/angular-chart.js/dist/angular-chart.min.js"></script>
 
         <!-- BROWSERIFY BUNDLE -->
         <script src="dist/js/bundle.min.js"></script>
@@ -40,8 +50,10 @@
                 <ul class="nav navbar-nav">
                     <li><a href="/wifi">WiFi</a></li>
                 </ul>
+                <ul class="nav navbar-nav">
+                    <li><a href="/balls">Balls</a></li>
+                </ul>
             </nav>
-
             <!-- ANGULAR DYNAMIC CONTENT -->
             <div ng-view></div>
 

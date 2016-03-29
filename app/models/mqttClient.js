@@ -2,12 +2,16 @@ var mqtt = require('mqtt');
 var path = require('path');
 var fs = require('fs');
 
+var mockDataSender = require('./mockDataSender');
+
 var topicHandler = {};
 var normalizedPath = path.join(__dirname, 'topic-handlers');
 fs.readdirSync(normalizedPath).forEach(function(file) {
     var handler = require('./topic-handlers/' + file);
     if (handler.topic && handler.handler) {
-        topicHandler[handler.topic] = handler.handler;
+        if (!topicHandler[handler.topic])
+            topicHandler[handler.topic] = [];
+        topicHandler[handler.topic].push(handler.handler);
     }
 });
 
@@ -23,6 +27,7 @@ module.exports = function() {
         client = mqtt.connect(url, options);
         client.on('connect', onConnect);
         client.on('message', onMessage);
+        client.on('close', onClose);
     }
 
     function end() {
@@ -37,24 +42,21 @@ module.exports = function() {
             if (topicHandler.hasOwnProperty(topic))
                 client.subscribe(topic);
         }
-        // test();
+        mockDataSender.start(client);
         // client.subscribe(subscribeToTopic);
     }
 
     function onMessage(topic, message) {
-        if (topicHandler[topic])
-            topicHandler[topic](client, message);
+        if (topicHandler[topic]) {
+            for (var i = 0; i < topicHandler[topic].length; ++i)
+                topicHandler[topic][i](client, message);
+        }
         // client.end();
     }
 
-    function test() {
-        setInterval(function() {
-            client.publish('ball/get', getPublishableColor(1, {
-                r: getRandomInt(0, 100),
-                g: getRandomInt(0, 100),
-                b: getRandomInt(0, 100)
-            }));
-        }, 500);
+    function onClose(topic, message) {
+        mockDataSender.stop();
+        client = null;
     }
 };
 

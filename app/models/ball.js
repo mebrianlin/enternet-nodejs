@@ -2,15 +2,16 @@ var kalman = require('./kalman');
 
 module.exports = Ball;
 
-function Ball() {
+function Ball(color) {
+    this.color = color;
     this.distances = {};
-    this.color = '';
     this.acceleration = 0;
-    // this.kalman = kalman;
-    // console.log(kalman());
+    // this.kalman = kalman();
 }
 
-Ball.prototype.update = function(data) {
-    this.distances = data.distances;
+Ball.prototype.updateMeasurement = function(data) {
+    // TODO: this is because the sensors are sending these data on the rssi
+    this.distances = data.rssi;
     this.acceleration = data.acceleration;
+    // this.acceleration = this.kalman.filter(0, 1, 2);
 };

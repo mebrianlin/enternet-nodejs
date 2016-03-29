@@ -1,35 +1,24 @@
 var _ = require('lodash');
 
-var triangle = require('../triangle');
 var Ball = require('../ball');
+var color = require('../color');
 
 module.exports = {
    topic: 'ball/put',
-   handler: ballHandler
+   handler: ballHandler,
+   getBalls: getBalls
 };
 
-// the format of the distances to be passed to triangle
-// var distances = {
-//    1: {
-//       2: 0,
-//       3: 0
-//    },
-//    2: {
-//       1: 0,
-//       3: 0
-//    },
-//    3: {
-//       1: 0,
-//       2: 0
-//    }
-// };
-
 var balls = {};
-var RED   = { r: 100, g:   0, b:   0 };
-var GREEN = { r:   0, g: 100, b:   0 };
+var publishToTopic = 'ball/get';
+
+function getBalls() {
+    return balls;
+}
 
 function ballHandler(client, message) {
     var str = message.toString();
+    // console.log(str);
 
     // forcefully fix malformed json
     str = str.replace(', }', '}}');
@@ -37,22 +26,21 @@ function ballHandler(client, message) {
 
     var ballId = ballData.id;
     if (!balls[ballId]) {
-        balls[ballId] = new Ball();
+        balls[ballId] = new Ball(color.Black);
     }
 
-    balls[ballId].update(ballData);
+    balls[ballId].updateMeasurement(ballData);
 
     var THRESHOLD = -30;
-    var maxRssi = _.maxBy(_.values(ballData.rssi));
-    /* 0 indicates no signal, so we are counting from 1 here */
-    if (THRESHOLD < maxRssi && maxRssi < -1) {
-        client.publish('ball/get', getPublishableColor(ballId, GREEN));
+    //var maxRssi = _.maxBy(_.values(ballData.rssi));
+    var values = _.values(ballData.rssi);
+    for (var i = 0; i < values.length; ++i) {
+        if (THRESHOLD < values[i] && values[i] < -1) {
+            client.publish(publishToTopic, getPublishableColor(ballId, color.Green));
+            return;
+        }
     }
-    else {
-        client.publish('ball/get', getPublishableColor(ballId, RED));
-    }
-
-//     client.publish('ball/pos', JSON.stringify(positions));
+    client.publish(publishToTopic, getPublishableColor(ballId, color.Red));
 }
 
 function getRandomInt(min, max) {
@@ -61,8 +49,8 @@ function getRandomInt(min, max) {
 }
 
 function getPublishableColor(ballId, color) {
-    return ballId + ':' + zeroFill(color.r, 3) + ',' +
-        zeroFill(color.g, 3) + ',' + zeroFill(color.b, 3);
+    return ballId + ':' + zeroFill(color[0], 3) + ',' +
+        zeroFill(color[1], 3) + ',' + zeroFill(color[2], 3);
 }
 
 function zeroFill(number, size) {

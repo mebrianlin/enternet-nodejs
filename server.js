@@ -8,7 +8,6 @@ var methodOverride = require('method-override');
 var logger = require('./app/models/logger');
 var mqttClient = require('./app/models/mqttClient')();
 var config = require('./app/config');
-
 // configuration ===========================================
 
 // config files

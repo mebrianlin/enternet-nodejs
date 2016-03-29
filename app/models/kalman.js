@@ -1,7 +1,7 @@
-require('sylvester');
+var sylvester = require('sylvester');
+var Matrix = sylvester.Matrix;
 
 module.exports = function() {
-
     // Settings //////////////////////////////////////
 
     // The decay errodes the assumption that velocity
@@ -30,7 +30,7 @@ module.exports = function() {
     // choice between slower tracking (due to uncertainty)
     // and unrealistic tracking because the data is too noisy.
 
-    // var R = Matrix.Diagonal([0.02, 0.02]);
+    var R = Matrix.Diagonal([0.02, 0.02]);
 
 
     // initial state (location and velocity)
@@ -76,7 +76,13 @@ module.exports = function() {
     var time = Date.now();
 
     // Event Loop //////////////////////////////////////
-    function filter(xMeasure, yMeasure) {
+    function filter(xMeasure, yMeasure, zMeasure) {
+        if (xMeasure === null || yMeasure === null || zMeasure === null) {
+            console.error('Missing measured input.');
+            console.log('x:', xMeasure);
+            console.log('y:', yMeasure);
+            console.log('z:', zMeasure);
+        }
         // change in time
         var now = Date.now();
         var dt = now - time;
@@ -105,8 +111,9 @@ module.exports = function() {
         var S = H.x(P).x(H.transpose()).add(R);
 
         var K = P.x(H.transpose()).x(S.inverse());
+
         x = x.add(K.x(y));
-        // P = I.subtract(K.x(H)).x(P);
+        P = I.subtract(K.x(H)).x(P);
 
         // Draw our predicted point
         // var pSize = P.max() * 2000;
@@ -114,7 +121,12 @@ module.exports = function() {
 
         return {
             x: x.e(1, 1),
-            y: x.e(2, 1)
+            y: x.e(2, 1),
+            z: x.e(3, 1)
         };
     }
+
+    return {
+        filter: filter
+    };
 };
