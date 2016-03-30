@@ -4,15 +4,14 @@ var logger = require('./logger');
 var ports = require('../config.js').ports;
 
 module.exports = function() {
-
     var settings = {
         http: {
-            port: ports.wsPort,
+            port: ports.mqttWsPort,
             bundle: true,
             static: './'
         },
         mqtt: {
-            port: ports.mqttWsPort
+            port: ports.mqttPort
         }
     };
 

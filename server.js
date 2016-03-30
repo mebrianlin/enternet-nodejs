@@ -6,7 +6,7 @@ var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var logger = require('./app/models/logger');
-var mqttClient = require('./app/models/mqttClient')();
+// var mqttClient = require('./app/models/mqttClient')();
 var config = require('./app/config');
 // configuration ===========================================
 
@@ -14,14 +14,29 @@ var config = require('./app/config');
 var db = require('./config/db');
 
 var port = process.env.PORT || config.ports.httpPort; // set our port
-var mqttPort = config.ports.mqttPort;
 // mongoose.connect(db.url); // connect to our mongoDB database (commented out after you enter in your own credentials)
 
 // spin up the mqtt broker
 require('./app/models/mqttBroker')();
 
-mqttClient.connect(config.mqttBrokers['shiftr'].mqttUrl, {
-   clientId: 'enternet'
+// mqttClient.connect(config.mqttBrokers['localhost'].mqttUrl, {
+//    clientId: 'enternet'
+// });
+
+// connect all the mqtt clients
+var fs = require('fs');
+var path = require('path');
+var normalizedPath = path.join(__dirname, 'app/models/mqtt-clients');
+fs.readdirSync(normalizedPath).forEach(function(file) {
+    var index = file.lastIndexOf('.');
+    var clientId = index < 0 ? file : file.substring(0, index);
+    var mqttClient = require('./app/models/mqtt-clients/' + file)();
+
+    if (mqttClient.enabled) {
+        mqttClient.connect(config.mqttBrokers['localhost'].mqttUrl, {
+            clientId: clientId
+        });
+    }
 });
 
 // view engine setup

@@ -5,7 +5,8 @@ var Ball = require('../ball');
 var color = require('../color');
 
 module.exports = {
-   topic: 'ball/wifi',
+   // topic: 'ball/wifi',
+   topic: 'ball/put',
    handler: ballWifiHandler
 };
 
@@ -26,7 +27,8 @@ module.exports = {
 // };
 
 var balls = {};
-var publishToTopic = 'ball/pos';
+// var publishToTopic = 'ball/pos';
+var publishToTopic = 'ball/get';
 
 function ballWifiHandler(client, message) {
     var str = message.toString();
