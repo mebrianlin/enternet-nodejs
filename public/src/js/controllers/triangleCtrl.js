@@ -11,7 +11,7 @@ angular.module('triangleCtrl', [])
         restrict: 'ACE',
         link: function($scope, element) {
             // to object
-            var scale = 30;
+            var scale = 250;
 
             var canvas = element[0];
             var ctx = canvas.getContext('2d');
@@ -35,7 +35,7 @@ angular.module('triangleCtrl', [])
             });
             client.on('message', function(topic, payload) {
                 var str = payload.toString();
-                // console.log(str);
+                console.log(str);
 
                 var positions = JSON.parse(str);
                 clearCanvas();

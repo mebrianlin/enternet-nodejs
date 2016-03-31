@@ -10,7 +10,7 @@ var levels = {
     debug: 4,
     silly: 5,
 
-    mqtt: 3,
+    mqtt: 5,
 };
 
 var colors = {

@@ -30,10 +30,10 @@ var normalizedPath = path.join(__dirname, 'app/models/mqtt-clients');
 fs.readdirSync(normalizedPath).forEach(function(file) {
     var index = file.lastIndexOf('.');
     var clientId = index < 0 ? file : file.substring(0, index);
-    var mqttClient = require('./app/models/mqtt-clients/' + file)();
+    var mqttClient = require('./app/models/mqtt-clients/' + file);
 
     if (mqttClient.enabled) {
-        mqttClient.connect(config.mqttBrokers['localhost'].mqttUrl, {
+        mqttClient.connect(config.mqttBrokers.localhost.mqttUrl, {
             clientId: clientId
         });
     }

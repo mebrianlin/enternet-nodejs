@@ -1,7 +1,39 @@
 var sylvester = require('sylvester');
 var Matrix = sylvester.Matrix;
 
-module.exports = function() {
+module.exports = {
+    kalman1d: kalman1d,
+    kalman2d: kalman2d
+};
+
+function kalman1d() {
+    var q = 10000; // process noise covariance
+    var r = 5; // measurement noise covariance
+    var x = -1; // value
+    var p = 5; // estimation error covariance
+    var k; // kalman gain
+
+    var self = this;
+
+    function filter(measurement) {
+        // prediction update
+        // omit x = x
+        p = p + q;
+// console.log(x, k, measurement);
+        // measurement update
+        k = p / (p + r);
+        x = x + k * (measurement - x);
+        p = (1 - k) * p;
+
+        return x;
+    }
+
+    return {
+        filter: filter
+    };
+}
+
+function kalman2d() {
     // Settings //////////////////////////////////////
 
     // The decay errodes the assumption that velocity
@@ -129,4 +161,4 @@ module.exports = function() {
     return {
         filter: filter
     };
-};
+}

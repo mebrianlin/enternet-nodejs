@@ -1,6 +1,8 @@
 angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
 .controller('ballsController', ['$scope', '$http', '$interval', function($scope, $http, $interval) {
 
+        var LENGTH = 20;
+
        $scope.data = {
          acceleration: [
            {x: 0, val_0: 0, val_1: 0, val_2: 0, val_3: 0},
@@ -11,25 +13,35 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
            {x: 5, val_0: 4.207, val_1: 9.093, val_2: 2.117, val_3: -15.136},
            {x: 6, val_0: 4.66, val_1: 6.755, val_2: -6.638, val_3: -19.923},
            {x: 7, val_0: 4.927, val_1: 3.35, val_2: -13.074, val_3: -12.625}
-         ]
+         ],
+         // distance: _.times(LENGTH, _.constant(0))
+         distance: []
        };
 
        $scope.options = {
          series: [
+           // {
+           //   axis: 'y',
+           //   dataset: 'acceleration',
+           //   key: 'val_1',
+           //   label: 'acceleration',
+           //   color: "#1f77b4",
+           //   type: ['line', 'dot'],
+           //   id: 'acceleration'
+           // },
            {
              axis: 'y',
-             dataset: 'acceleration',
-             key: 'val_1',
-             label: 'acceleration',
+             dataset: 'distance',
+             key: '2',
+             label: 'distance',
              color: "#1f77b4",
              type: ['line', 'dot'],
-             id: 'acceleration'
+             id: 'distance'
            }
          ],
          axes: {x: {key: 'x'}}
        };
 
-    var LENGTH = 10;
 
     var accelerationLabels = _.times(LENGTH, _.constant(0));
     var accelerationSeries = [];
@@ -39,9 +51,21 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
 
     var t = 8;
 
-    setInterval(function() {
+    $interval(function() {
+        var ballId = 1;
+
         $http.get('/api/balls/get')
         .then(function(data) {
+            if (_.isEmpty(data.data))
+                return;
+
+            var balls = data.data;
+
+            balls[ballId].distances.x = ++t;
+            if ($scope.data.distance.length >= LENGTH)
+                $scope.data.distance.shift();
+            $scope.data.distance.push(balls[ballId].distances);
+            console.log($scope.data.distance);
              $scope.data.acceleration.push({
                  x: t++,
                  val_1: Math.random() * 5}
@@ -91,7 +115,7 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
             // $scope.distanceData = distanceData;
 
         });
-    }, 1000);
+    }, 200);
     // $interval(function() {
         // $http.get('/api/balls/get')
         // .then(function(data) {
