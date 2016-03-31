@@ -1,237 +1,103 @@
 angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
 .controller('ballsController', ['$scope', '$http', '$interval', function($scope, $http, $interval) {
 
-        var LENGTH = 20;
+    var rssiData = [];
+    var rssiData2 = [];
+    var updateInterval = 100;
+    var LENGTH = 50;
 
-       $scope.data = {
-         acceleration: [
-           {x: 0, val_0: 0, val_1: 0, val_2: 0, val_3: 0},
-           {x: 1, val_0: 0.993, val_1: 3.894, val_2: 8.47, val_3: 14.347},
-           {x: 2, val_0: 1.947, val_1: 7.174, val_2: 13.981, val_3: 19.991},
-           {x: 3, val_0: 2.823, val_1: 9.32, val_2: 14.608, val_3: 13.509},
-           {x: 4, val_0: 3.587, val_1: 9.996, val_2: 10.132, val_3: -1.167},
-           {x: 5, val_0: 4.207, val_1: 9.093, val_2: 2.117, val_3: -15.136},
-           {x: 6, val_0: 4.66, val_1: 6.755, val_2: -6.638, val_3: -19.923},
-           {x: 7, val_0: 4.927, val_1: 3.35, val_2: -13.074, val_3: -12.625}
-         ],
-         // distance: _.times(LENGTH, _.constant(0))
-         distance: []
-       };
+    var rssiCanvasData = {
+        id: [
+            { source: 1, target: 2 },
+            { source: 3, target: 1 }
+        ],
+        data: [],
+        dataPoints: {}
+    };
 
-       $scope.options = {
-         series: [
-           // {
-           //   axis: 'y',
-           //   dataset: 'acceleration',
-           //   key: 'val_1',
-           //   label: 'acceleration',
-           //   color: "#1f77b4",
-           //   type: ['line', 'dot'],
-           //   id: 'acceleration'
-           // },
-           {
-             axis: 'y',
-             dataset: 'distance',
-             key: '2',
-             label: 'distance',
-             color: "#1f77b4",
-             type: ['line', 'dot'],
-             id: 'distance'
-           }
-         ],
-         axes: {x: {key: 'x'}}
-       };
+    _.forEach(rssiCanvasData.id, function(id) {
+        var rssiData = [];
+        if (_.isEmpty(rssiCanvasData.dataPoints[id.source])) {
+            rssiCanvasData.dataPoints[id.source] = {};
+        }
+        rssiCanvasData.dataPoints[id.source][id.target] = rssiData;
 
+        rssiCanvasData.data.push({
+            type: 'line',
+            dataPoints: rssiData,
+            showInLegend: true,
+            legendText: id.source + '->' + id.target
+        });
+    });
+    console.log(rssiCanvasData);
 
-    var accelerationLabels = _.times(LENGTH, _.constant(0));
-    var accelerationSeries = [];
-    var accelerationData = [];
-    var distanceLabels = [];
-    var distanceData = [];
+    function rssiToDistance(rssi) {
+        var n = 2;
+        var A = -40; // received signal strength (dBm) at 1 meter
+        // RSSI = -10nlogd + A
+        return Math.pow(10, (A - rssi) / (10 * n));
+    }
 
-    var t = 8;
+    var canvasData = rssiCanvasData.data;
+
+    $scope.chart = new CanvasJS.Chart('chartContainer', {
+        title:{
+            text: 'RSSI'
+        },
+        axisY:{
+            title: "Distance (m)",
+            interlacedColor: "#F8F1E4",
+            // tickLength: 10,
+            minimum: 0,
+            maximum: 5,
+            includeZero: false
+        },
+        data: canvasData
+        // data: [
+        //     {
+        //         type: 'line',
+        //         dataPoints: rssiData,
+        //         showInLegend: true,
+        //         legendText: '1->2'
+        //     },
+        //     {
+        //         type: 'line',
+        //         dataPoints: rssiData2,
+        //         showInLegend: true,
+        //         legendText: '1->2'
+        //     }
+        // ]
+    });
+
+    $scope.chart.render();
+    var t = 0;
 
     $interval(function() {
-        var ballId = 1;
-
         $http.get('/api/balls/get')
         .then(function(data) {
-            if (_.isEmpty(data.data))
-                return;
-
             var balls = data.data;
 
-            balls[ballId].distances.x = ++t;
-            if ($scope.data.distance.length >= LENGTH)
-                $scope.data.distance.shift();
-            $scope.data.distance.push(balls[ballId].distances);
-            console.log($scope.data.distance);
-             $scope.data.acceleration.push({
-                 x: t++,
-                 val_1: Math.random() * 5}
-             );
-            // $scope.data.acceleration.push($scope.data.acceleration[$scope.data.acceleration.length - 1]);
-            $scope.data.acceleration.shift();
+            if (_.isEmpty(balls))
+                return;
 
+            ++t; // advance the time
+            _.forEach(rssiCanvasData.id, function(id) {
+                if (_.isEmpty(balls[id.source]))
+                    return;
 
-            // var balls = data.data;
-            // console.log(balls);
+                var rssiData = rssiCanvasData.dataPoints[id.source][id.target];
+                if (rssiData.length > LENGTH)
+                    rssiData.shift();
+                rssiData.push({
+                    x: t,
+                    y: rssiToDistance(balls[id.source].distances[id.target])
+                });
+            });
 
-            // accelerationSeries = [];
-            // for (var bId in balls) {
-            //     if (balls.hasOwnProperty(bId)) {
-
-            //         accelerationLabels.shift();
-            //         accelerationLabels.push(Date.now());
-
-            //         accelerationSeries.push(bId);
-
-            //         if (!accelerationData[bId])
-            //             accelerationData[bId] = _.times(LENGTH, _.constant(0));
-
-            //         accelerationData[bId].shift();
-            //         accelerationData[bId].push(balls[bId].acceleration);
-            //     }
-
-            //     var distances = balls[bId].distances;
-            //     for (var dId in distances) {
-            //         if (distances.hasOwnProperty(dId)) {
-            //             distanceLabels.push(bId + '->' + dId);
-            //             distanceData.push(distances[dId]);
-            //         }
-            //     }
-            // }
-            // $scope.accelerationLabels = accelerationLabels;
-            // $scope.accelerationSeries = accelerationSeries;
-
-            // $scope.accelerationData = [];
-            // for (var l in accelerationSeries) {
-            //     if (accelerationSeries.hasOwnProperty(l)) {
-            //         $scope.accelerationData.push(accelerationData[accelerationSeries[l]]);
-            //     }
-            // }
-
-            // $scope.distanceLabels = distanceLabels;
-            // $scope.distanceData = distanceData;
-
+            $scope.chart.render();
         });
-    }, 200);
-    // $interval(function() {
-        // $http.get('/api/balls/get')
-        // .then(function(data) {
+    }, updateInterval);
 
-        //     var balls = data.data;
-        //     console.log(balls);
-
-        //     accelerationSeries = [];
-        //     for (var bId in balls) {
-        //         if (balls.hasOwnProperty(bId)) {
-
-        //             accelerationLabels.shift();
-        //             accelerationLabels.push(Date.now());
-
-        //             accelerationSeries.push(bId);
-
-        //             if (!accelerationData[bId])
-        //                 accelerationData[bId] = _.times(LENGTH, _.constant(0));
-
-        //             accelerationData[bId].shift();
-        //             accelerationData[bId].push(balls[bId].acceleration);
-        //         }
-
-        //         var distances = balls[bId].distances;
-        //         for (var dId in distances) {
-        //             if (distances.hasOwnProperty(dId)) {
-        //                 distanceLabels.push(bId + '->' + dId);
-        //                 distanceData.push(distances[dId]);
-        //             }
-        //         }
-        //     }
-        //     $scope.accelerationLabels = accelerationLabels;
-        //     $scope.accelerationSeries = accelerationSeries;
-
-        //     $scope.accelerationData = [];
-        //     for (var l in accelerationSeries) {
-        //         if (accelerationSeries.hasOwnProperty(l)) {
-        //             $scope.accelerationData.push(accelerationData[accelerationSeries[l]]);
-        //         }
-        //     }
-
-        //     $scope.distanceLabels = distanceLabels;
-        //     $scope.distanceData = distanceData;
-
-        //     console.log(accelerationLabels);
-        //     console.log(accelerationSeries);
-        //     console.log(accelerationData);
-        // });
-    // }, 500);
-
-    // $scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
-    // $scope.series = ['Series A', 'Series B'];
-    // $scope.data = [
-    //     [65, 59, 80, 81, 56, 55, 40],
-    //     [28, 48, 40, 19, 86, 27, 90]
-    // ];
-    // $scope.onClick = function (points, evt) {
-    //     console.log(points, evt);
-    // };
-
-    // var LENGTH = 10;
-
-    // var accelerationLabels = _.times(LENGTH, _.constant(0));
-    // var accelerationSeries = [];
-    // var accelerationData = [];
-    // var distanceLabels = [];
-    // var distanceData = [];
-
-    // $interval(function() {
-    //     $http.get('/api/balls/get')
-    //     .then(function(data) {
-
-    //         var balls = data.data;
-
-    //         accelerationSeries = [];
-    //         for (var bId in balls) {
-    //             if (balls.hasOwnProperty(bId)) {
-
-    //                 accelerationLabels.shift();
-    //                 accelerationLabels.push(Date.now());
-
-    //                 accelerationSeries.push(bId);
-
-    //                 if (!accelerationData[bId])
-    //                     accelerationData[bId] = _.times(LENGTH, _.constant(0));
-
-    //                 accelerationData[bId].shift();
-    //                 accelerationData[bId].push(balls[bId].acceleration);
-    //             }
-
-    //             var distances = balls[bId].distances;
-    //             for (var dId in distances) {
-    //                 if (distances.hasOwnProperty(dId)) {
-    //                     distanceLabels.push(bId + '->' + dId);
-    //                     distanceData.push(distances[dId]);
-    //                 }
-    //             }
-    //         }
-    //         $scope.accelerationLabels = accelerationLabels;
-    //         $scope.accelerationSeries = accelerationSeries;
-
-    //         $scope.accelerationData = [];
-    //         for (var l in accelerationSeries) {
-    //             if (accelerationSeries.hasOwnProperty(l)) {
-    //                 $scope.accelerationData.push(accelerationData[accelerationSeries[l]]);
-    //             }
-    //         }
-
-    //         $scope.distanceLabels = distanceLabels;
-    //         $scope.distanceData = distanceData;
-
-    //         console.log(accelerationLabels);
-    //         console.log(accelerationSeries);
-    //         console.log(accelerationData);
-    //     });
-    // }, 500);
 
     $scope.changeColor = function() {
         throw new Error('Color change is not implemented.');

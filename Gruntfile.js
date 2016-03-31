@@ -20,7 +20,7 @@ module.exports = function(grunt) {
                     {
                         expand: true,
                         cwd: 'node_modules/',
-                        src: ['n3-charts/build/**', 'd3/d3.min.js'],
+                        src: ['n3-charts/build/**', 'd3/d3.min.js', 'canvasjs/dist/canvasjs.min.js'],
                         dest: 'public/libs/'
                     }
                 ]

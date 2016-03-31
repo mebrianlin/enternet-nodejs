@@ -29,7 +29,8 @@
         "mosca": "~1.1.2",
         "sylvester": "~0.0.21",
         "d3": "3.5.16",
-        "n3-charts": "~2.0.19"
+        "n3-charts": "~2.0.19",
+        "canvasjs": "~1.8.1"
     },
     "devDependencies": {
         "grunt": "~0.4.5",
