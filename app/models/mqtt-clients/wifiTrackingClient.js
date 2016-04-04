@@ -10,7 +10,7 @@ var subscribeToTopic = 'ball/put/#';
 var publishToTopic = 'ball/pos';
 
 module.exports = {
-     enabled: true,
+     // enabled: true,
      connect: connect,
      end: end
 };
