@@ -11,8 +11,8 @@ module.exports.ports = ports;
 
 module.exports.mqttBrokers = {
     'localhost': {
-        wsUrl: 'ws://localhost:' + ports.mqttWsPort,
-        mqttUrl: 'mqtt://localhost:' + ports.mqttPort
+        wsUrl: 'ws://54.88.50.245:' + ports.mqttWsPort,
+        mqttUrl: 'mqtt://54.88.50.245:' + ports.mqttPort
     },
     'mosquitto': {
         wsUrl: 'ws://test.mosquitto.org:8080/mqtt',

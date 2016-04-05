@@ -33,6 +33,7 @@ fs.readdirSync(normalizedPath).forEach(function(file) {
     var mqttClient = require('./app/models/mqtt-clients/' + file);
 
     if (mqttClient.enabled) {
+        logger.info('Enabling client ' + clientId);
         mqttClient.connect(config.mqttBrokers.localhost.mqttUrl, {
             clientId: clientId
         });

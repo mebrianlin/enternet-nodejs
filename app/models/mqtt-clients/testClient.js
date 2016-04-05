@@ -10,22 +10,18 @@ var publishToTopic = 'ball/get';
 module.exports = {
      // enabled: true,
      connect: connect,
-     end: end,
-     getBalls: getBalls
+     end: end
 };
 
 var client;
 var balls = {};
 
-function getBalls() {
-    return balls;
-}
-
 function connect(url, options) {
     client = mqtt.connect(url, options);
 
     client.on('connect', onConnect);
-    client.on('message', ballHandler);
+    client.on('message', testHandler);
+
 }
 
 function end() {
@@ -38,12 +34,14 @@ function onConnect() {
     client.subscribe(subscribeToTopic);
 }
 
-function ballHandler(topic, message) {
+function testHandler(topic, message) {
     var str = message.toString();
 
     // TODO: forcefully fix malformed JSON, should fix it from the device side
     str = str.replace(' }}', '\"}}');
     var ballData = JSON.parse(str);
+
+    // TODO: forcefully invert the rssi to get an estimate of distance for now
 
     var ballId = ballData.id;
     if (!balls[ballId]) {
@@ -52,34 +50,15 @@ function ballHandler(topic, message) {
 
     balls[ballId].updateMeasurement(ballData);
 
-    // var ACCELERATION_THRESHOLD = 12;
-    // if (balls[ballId].acceleration > ACCELERATION_THRESHOLD) {
-    //     changeColor(ballId, color.Red);
-    // }
-    // else {
-    //     changeColor(ballId, color.Green);
-    // }
-
-    var THRESHOLD = -30;
-    // var maxRssi = _.maxBy(_.values(ballData.rssi));
-    var maxRssi = -100;
-
-    var values = _.values(ballData.rssi);
-
-    for (var i = 0; i < values.length; ++i) {
-        if (maxRssi < values[i] && values[i] < 0) {
-            maxRssi = values[i];
-        }
-        if (THRESHOLD < maxRssi) {
-            changeColor(ballId, color.Green);
-            return;
-        }
-    }
-    if (maxRssi < -40)
+    var ACCELERATION_THRESHOLD = 12;
+    if (balls[ballId].acceleration > ACCELERATION_THRESHOLD) {
         changeColor(ballId, color.Red);
-    else
-        changeColor(ballId, color.Blue);
+    }
+    else {
+        changeColor(ballId, color.Green);
+    }
 }
+
 
 function changeColor(ballId, ballColor) {
     balls[ballId].updateColor(ballColor);
