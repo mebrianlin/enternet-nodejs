@@ -9,7 +9,8 @@ module.exports = {
     end: end
 };
 
-var subscribeToTopic = 'ball/put/#';
+// var subscribeToTopic = 'ball/put/#';
+var subscribeToTopic = '#';
 
 var client;
 
@@ -48,7 +49,7 @@ function ballRecordhandler(topic, message) {
 
     var text = str;
 
-    fs.appendFile('balls-move.dump', text + os.EOL, function(err) {
+    fs.appendFile('balls-4.dump', text + os.EOL, function(err) {
         if (err) {
             console.log(err);
             return;

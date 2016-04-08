@@ -74,7 +74,7 @@ function ballHandler(topic, message) {
             maxDistance = values[i];
         }
     }
-    console.log(maxDistance);
+    // console.log(maxDistance);
     if (maxDistance < 0.5)
         changeColor(ballId, color.Green);
     else if (maxDistance < 1.7)
