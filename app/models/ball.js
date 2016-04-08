@@ -15,7 +15,8 @@ function Ball(color) {
     this.filters = {
         acceleration: MA(movingAveragePeriod)
     };
-    // this.time = Date.now();
+    this.ballId = id;
+    this.affectingTimestamp = 0;
     // this.kalman = kalman();
 }
 

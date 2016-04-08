@@ -4,7 +4,7 @@ module.exports = {
     Green :[  0, 100,   0],
     Blue  :[  0,   0, 100],
     Yellow:[100, 100,   0],
-
+    Purple: [182, 67, 223],
     getRandomColor: getRandomColor,
     getPublishableColor: getPublishableColor
 };

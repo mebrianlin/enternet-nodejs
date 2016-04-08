@@ -19,7 +19,12 @@ module.exports = {
 var client;
 // these are the balls
 var balls = {};
-
+var virus = {};
+var affecting = {};
+var normalBalls = {};
+// detectVirusFunction id
+var detectVirusFunctionId;
+var THRESHOLD = -30;
 // connect to the mqtt broker
 function connect(url, options) {
     client = mqtt.connect(url, options);
@@ -38,6 +43,7 @@ function end() {
 // when connected, subscribe to a topic
 function onConnect() {
     client.subscribe(subscribeToTopic);
+    setTimeout(startGame, 3500);
 }
 
 function virusHandler(topic, message) {
@@ -49,26 +55,87 @@ function virusHandler(topic, message) {
 
     var ballId = ballData.id;
     if (!balls[ballId]) {
-        balls[ballId] = new Ball(color.Black);
+        balls[ballId] = new Ball(color.Black, ballId);
     }
 
     balls[ballId].updateMeasurement(ballData);
+}
 
-    var THRESHOLD = -30;
-    var values = _.values(ballData.rssi);
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
-    // if the max value is above the threshold, let the ball be green
-    for (var i = 0; i < values.length; ++i) {
-        if (THRESHOLD < values[i] && values[i] < -1) {
-            changeColor(ballId, color.Green);
-            return;
+function startGame(){
+    clearInterval(detectVirusFunctionId);
+    //var virusId = Object.keys(balls)[getRandomInt(0, _.size(balls))];
+    var virusId = 2;
+    console.log("vid ", virusId);
+    virus = {};
+    affecting = {};
+    normalBalls = {};
+    //update virus
+    virus[virusId] = balls[virusId];
+    changeColor(virusId, color.Red);
+    //reset others to green
+    for (var bId in balls) {
+        if(bId != virusId){
+            normalBalls[bId] = balls[bId];
+            changeColor(bId, color.Green);
         }
     }
+    detectVirusFunctionId = setInterval(detectVirus, 1000);
+}
+var timeThreshold = 3000;
 
-    changeColor(ballId, color.Red);
+function detectVirus(){
+    //affecting to virus
+    for(var abId in affecting){
+        var isWithDistance = false;
+        for(var vid in virus) {
+            if(affecting[abId].distances[vid] >= THRESHOLD){
+                isWithDistance = true;
+                if(Date.now() - affecting[abId].affectingTimestamp >= timeThreshold){
+                    virus[abId] = affecting[abId];
+                    changeColor(abId, color.Red);
+                    delete affecting[abId];
+                }
+                break;
+            }
+        }
+        if(!isWithDistance){
+            //put back to normal
+            affecting[abId].affectingTimestamp = 0;
+            normalBalls[abId] = affecting[abId];
+            changeColor(abId, color.Green);
+            delete affecting[abId];
+        }
+    }
+    //normal to affecting
+    for(var nbId in normalBalls){
+        for(var vid1 in virus) {
+            if(normalBalls[nbId].distances[vid1] >= THRESHOLD){
+                //affected
+                normalBalls[nbId].affectingTimestamp = Date.now();
+                affecting[nbId] = normalBalls[nbId];
+                changeColor(nbId, color.Purple);
+                delete normalBalls[nbId];
+                break;
+            }
+        }
+    }
+    console.log("virus ", Object.keys(virus));
+    console.log("affecting ", Object.keys(affecting));
+    console.log("normalBalls ", Object.keys(normalBalls));
 }
 
 function changeColor(ballId, ballColor) {
+    // console.log("changeColor ");
+    // console.log(balls[ballId]);
+    // console.log(ballId);
+
+    balls[ballId].color = ballColor;
+    // console.log(balls);
+    
     client.publish(publishToTopic,
         color.getPublishableColor(ballId, ballColor));
 }
