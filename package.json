@@ -10,6 +10,7 @@
     "scripts": {
         "postinstall": "bower install",
         "start": "grunt",
+        "mqttTest": "grunt mqttTest",
         "clean": "npm prune"
     },
     "repository": {
@@ -30,7 +31,8 @@
         "sylvester": "~0.0.21",
         "d3": "3.5.16",
         "n3-charts": "~2.0.19",
-        "canvasjs": "~1.8.1"
+        "canvasjs": "~1.8.1",
+        "nanotimer": "~0.3.14"
     },
     "devDependencies": {
         "grunt": "~0.4.5",

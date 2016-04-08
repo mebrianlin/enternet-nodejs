@@ -55,7 +55,7 @@ function testHandler(topic, message) {
         changeColor(ballId, color.Red);
     }
     else {
-        changeColor(ballId, color.Green);
+        changeColor(ballId, color.Blue);
     }
 }
 

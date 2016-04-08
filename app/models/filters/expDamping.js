@@ -1,7 +1,7 @@
 var _ = require('lodash');
 
 module.exports = function() {
-    var damping = 0.85;
+    var damping = 0.8;
     var avg = 0;
 
     return {

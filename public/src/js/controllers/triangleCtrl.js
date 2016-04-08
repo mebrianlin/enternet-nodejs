@@ -11,7 +11,7 @@ angular.module('triangleCtrl', [])
         restrict: 'ACE',
         link: function($scope, element) {
             // to object
-            var scale = 250;
+            var scale = 100;
 
             var canvas = element[0];
             var ctx = canvas.getContext('2d');
@@ -27,7 +27,9 @@ angular.module('triangleCtrl', [])
                 ctx.stroke();
             }
 
-            var client = mqtt.connect(url);
+            var client = mqtt.connect(url, {
+                clientId: 'frontend_triangleCtrl'
+            });
 
             client.on('connect', function(connack) {
                 console.log('connect');

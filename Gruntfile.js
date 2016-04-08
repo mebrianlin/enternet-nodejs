@@ -80,16 +80,30 @@ module.exports = function(grunt) {
         // watch our node server for changes
         nodemon: {
             dev: {
-                script: 'server.js'
+                script: 'server.js',
+            },
+            mqttTest: {
+                script: 'server.js',
+                options: {
+                    args: ['--nohttp']
+                }
             }
         },
 
         // run watch and nodemon at the same time
         concurrent: {
-            options: {
-                logConcurrentOutput: true
+            dev: {
+                options: {
+                    logConcurrentOutput: true
+                },
+                tasks: ['nodemon', 'watch']
             },
-            tasks: ['nodemon', 'watch']
+            mqttTest: {
+                options: {
+                    logConcurrentOutput: true
+                },
+                tasks: ['nodemon:mqttTest', 'watch']
+            }
         }
     });
 
@@ -104,4 +118,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-concurrent');
 
     grunt.registerTask('default', ['less', 'cssmin', 'copy', 'browserify', 'jshint', 'uglify', 'concurrent']);
+    grunt.registerTask('mqttTest', ['less', 'cssmin', 'copy', 'browserify', 'jshint', 'uglify', 'concurrent:mqttTest']);
 };

@@ -5,6 +5,7 @@ var path = require('path');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
+var minimist = require('minimist');
 var logger = require('./app/models/logger');
 // var mqttClient = require('./app/models/mqttClient')();
 var config = require('./app/config');
@@ -17,7 +18,7 @@ var port = process.env.PORT || config.ports.httpPort; // set our port
 // mongoose.connect(db.url); // connect to our mongoDB database (commented out after you enter in your own credentials)
 
 // spin up the mqtt broker
-require('./app/models/mqttBroker')();
+// require('./app/models/mqttBroker')();
 
 // mqttClient.connect(config.mqttBrokers['localhost'].mqttUrl, {
 //    clientId: 'enternet'
@@ -31,14 +32,21 @@ fs.readdirSync(normalizedPath).forEach(function(file) {
     var index = file.lastIndexOf('.');
     var clientId = index < 0 ? file : file.substring(0, index);
     var mqttClient = require('./app/models/mqtt-clients/' + file);
+    // a random affix so multiple clients will not clash
+    var randomId = Math.random().toString().slice(-6);
 
     if (mqttClient.enabled) {
         logger.info('Enabling client ' + clientId);
         mqttClient.connect(config.mqttBrokers.localhost.mqttUrl, {
-            clientId: clientId
+            clientId: clientId + randomId
         });
     }
 });
+
+var argv = minimist(process.argv.slice(2));
+if (argv.nohttp) {
+    return;
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'public'));

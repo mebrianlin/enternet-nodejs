@@ -10,7 +10,7 @@ var publishToTopic = 'ball/get';
 
 // this is what the external modules see
 module.exports = {
-     enabled: true, // this is to enable this virus client
+     // enabled: true, // this is to enable this virus client
      connect: connect,
      end: end
 };

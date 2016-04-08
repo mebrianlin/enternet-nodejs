@@ -5,13 +5,9 @@ var ports = require('../config.js').ports;
 
 module.exports = function() {
     var settings = {
+        port: ports.mqttPort,
         http: {
-            port: ports.mqttWsPort,
-            bundle: true,
-            static: './'
-        },
-        mqtt: {
-            port: ports.mqttPort
+            port: ports.mqttWsPort
         }
     };
 

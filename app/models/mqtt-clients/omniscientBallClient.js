@@ -3,6 +3,7 @@ var _ = require('lodash');
 
 var Ball = require('../ball');
 var color = require('../color');
+var rssi = require('../rssi');
 
 var subscribeToTopic = 'ball/put/#';
 var publishToTopic = 'ball/get';
@@ -40,10 +41,21 @@ function onConnect() {
 
 function ballHandler(topic, message) {
     var str = message.toString();
+    console.log(str);
 
     // TODO: forcefully fix malformed JSON, should fix it from the device side
     str = str.replace(' }}', '\"}}');
     var ballData = JSON.parse(str);
+
+
+
+    for (var r in ballData.rssi) {
+        if (ballData.rssi.hasOwnProperty(r)) {
+            ballData.rssi[r] = rssi.toDistance(ballData.rssi[r]);
+        }
+    }
+
+
 
     var ballId = ballData.id;
     if (!balls[ballId]) {
@@ -52,33 +64,45 @@ function ballHandler(topic, message) {
 
     balls[ballId].updateMeasurement(ballData);
 
-    // var ACCELERATION_THRESHOLD = 12;
-    // if (balls[ballId].acceleration > ACCELERATION_THRESHOLD) {
-    //     changeColor(ballId, color.Red);
-    // }
-    // else {
-    //     changeColor(ballId, color.Green);
-    // }
 
-    var THRESHOLD = -30;
-    // var maxRssi = _.maxBy(_.values(ballData.rssi));
-    var maxRssi = -100;
 
-    var values = _.values(ballData.rssi);
 
+    var values = _.values(balls[ballId].distances);
+    var maxDistance = 0;
     for (var i = 0; i < values.length; ++i) {
-        if (maxRssi < values[i] && values[i] < 0) {
-            maxRssi = values[i];
-        }
-        if (THRESHOLD < maxRssi) {
-            changeColor(ballId, color.Green);
-            return;
+        if (maxDistance < values[i]) {
+            maxDistance = values[i];
         }
     }
-    if (maxRssi < -40)
-        changeColor(ballId, color.Red);
-    else
+    console.log(maxDistance);
+    if (maxDistance < 0.5)
+        changeColor(ballId, color.Green);
+    else if (maxDistance < 1.7)
         changeColor(ballId, color.Blue);
+    else
+        changeColor(ballId, color.Red);
+
+
+
+    // var THRESHOLD = -35;
+    // // var maxRssi = _.maxBy(_.values(ballData.rssi));
+    // var maxRssi = -100;
+
+    // var values = _.values(ballData.rssi);
+
+    // for (var i = 0; i < values.length; ++i) {
+    //     if (maxRssi < values[i] && values[i] < 0) {
+    //         maxRssi = values[i];
+    //     }
+    //     if (THRESHOLD < maxRssi) {
+    //         changeColor(ballId, color.Green);
+    //         return;
+    //     }
+    // }
+    // if (maxRssi < -45)
+    //     changeColor(ballId, color.Red);
+    // else
+    //     changeColor(ballId, color.Blue);
 }
 
 function changeColor(ballId, ballColor) {

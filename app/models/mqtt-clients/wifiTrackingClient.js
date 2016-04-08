@@ -4,13 +4,14 @@ var _ = require('lodash');
 var triangle = require('../triangle');
 var Ball = require('../ball');
 var color = require('../color');
+var rssi = require('../rssi');
 var logger = require('../logger');
 
 var subscribeToTopic = 'ball/put/#';
 var publishToTopic = 'ball/pos';
 
 module.exports = {
-     // enabled: true,
+     enabled: true,
      connect: connect,
      end: end
 };
@@ -35,13 +36,6 @@ function onConnect() {
     client.subscribe(subscribeToTopic);
 }
 
-function rssiToDistance(rssi) {
-    var n = 2;
-    var A = -40; // received signal strength (dBm) at 1 meter
-    // RSSI = -10nlogd + A
-    return Math.pow(10, (A - rssi) / (10 * n));
-}
-
 function ballWifiHandler(topic, message) {
     var str = message.toString();
 
@@ -49,11 +43,14 @@ function ballWifiHandler(topic, message) {
     str = str.replace(' }}', '\"}}');
     var ballData = JSON.parse(str);
 
+// console.log('=======' + ballData.id);
+    // console.log(ballData.rssi);
+
     // TODO: forcefully invert the rssi to get an estimate of distance for now
     for (var r in ballData.rssi) {
         if (ballData.rssi.hasOwnProperty(r)) {
             // ballData.rssi[r] *= -1;
-            ballData.rssi[r] = rssiToDistance(ballData.rssi[r]);
+            ballData.rssi[r] = rssi.toDistance(ballData.rssi[r]);
         }
     }
 
@@ -71,8 +68,13 @@ function ballWifiHandler(topic, message) {
 
     if (distances.length !== 3)
         return;
-    // if (_.size(distances) !== 3)
-    //     return;
+
+    // var printDistance = _.map(distances, function(n) {
+    //     return _.map(n, function(m) {
+    //         return Math.floor(m * 100) / 100;
+    //     });
+    // })
+    // console.log(printDistance);
 
     var results = triangle(
         distances[0][0], distances[0][1],

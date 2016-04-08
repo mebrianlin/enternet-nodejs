@@ -1,4 +1,4 @@
-module.exports = triangle;
+module.exports = triangleRandom;
 
 function triangle(d12, d13, d21, d23, d31, d32) {
     var d1331 = (d31+d13)/2;
@@ -11,7 +11,7 @@ function triangle(d12, d13, d21, d23, d31, d32) {
     d2332 *= d2332;
     var x = (d1331 - d2332 + d1221*d1221) / (2 * d1221);
     var y = Math.sqrt(d1331 - x*x);
-    var points = [0, 0, d1221, 0, x, y];
+    var points = [0, 0, 1, 0, x/d1221, y/d1221];
     return points;
 }
 
@@ -47,7 +47,7 @@ function triangleRandom(d12, d13, d21, d23, d31, d32, times) {
     d2332 *= d2332;
     var x = (d1331 - d2332 + d1221*d1221) / (2 * d1221);
     var y = Math.sqrt(d1331 - x*x);
-    var points = [0, 0, d1221, 0, x, y];
+    var points = [0, 0, 1, 0, x/d1221, y/d1221];
     return points;
 }
 
