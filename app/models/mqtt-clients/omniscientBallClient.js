@@ -3,7 +3,6 @@ var _ = require('lodash');
 
 var Ball = require('../ball');
 var color = require('../color');
-var rssi = require('../rssi');
 
 var subscribeToTopic = 'ball/put/#';
 var publishToTopic = 'ball/get';
@@ -41,21 +40,11 @@ function onConnect() {
 
 function ballHandler(topic, message) {
     var str = message.toString();
-    console.log(str);
+    // console.log(str);
 
     // TODO: forcefully fix malformed JSON, should fix it from the device side
     str = str.replace(' }}', '\"}}');
     var ballData = JSON.parse(str);
-
-
-
-    for (var r in ballData.rssi) {
-        if (ballData.rssi.hasOwnProperty(r)) {
-            ballData.rssi[r] = rssi.toDistance(ballData.rssi[r]);
-        }
-    }
-
-
 
     var ballId = ballData.id;
     if (!balls[ballId]) {

@@ -1,6 +1,4 @@
 // var url = 'ws://try:try@broker.shiftr.io:80';
-// var subscribeToTopic = 'ball/pos';
-// var publishToTopic = 'ball/wifi';
 var url = 'ws://localhost:3000';
 var subscribeToTopic = 'ball/pos';
 var publishToTopic = 'ball/get';
@@ -11,7 +9,8 @@ angular.module('triangleCtrl', [])
         restrict: 'ACE',
         link: function($scope, element) {
             // to object
-            var scale = 100;
+            var offset = 100;
+            var scale = 200;
 
             var canvas = element[0];
             var ctx = canvas.getContext('2d');
@@ -37,13 +36,16 @@ angular.module('triangleCtrl', [])
             });
             client.on('message', function(topic, payload) {
                 var str = payload.toString();
-                console.log(str);
+                // console.log(str);
 
                 var positions = JSON.parse(str);
                 clearCanvas();
-                drawCircle(100+positions[1].x*scale, 100+positions[1].y*scale, 5);
-                drawCircle(100+positions[2].x*scale, 100+positions[2].y*scale, 5);
-                drawCircle(100+positions[3].x*scale, 100+positions[3].y*scale, 5);
+                for (var id in positions) {
+                    if (positions.hasOwnProperty(id)) {
+                        drawCircle(offset + positions[id].x * scale,
+                            offset + positions[id].y * scale, 5);
+                    }
+                }
             });
         }
     };

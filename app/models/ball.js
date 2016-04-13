@@ -1,4 +1,9 @@
-var kalman = require('./kalman');
+var _ = require('lodash');
+
+var rssi = require('./rssi');
+
+var kalman1d = require('./kalman').kalman1d;
+var outlier = require('./filters/outlier');
 var MA = require('./filters/movingAverage');
 var ED = require('./filters/expDamping');
 var WMA = require('./filters/weightedMovingAverage');
@@ -8,41 +13,74 @@ module.exports = Ball;
 var movingAveragePeriod = 3;
 var movingAverageWeights = [ 0.1, 0.2, 0.7 ];
 
-function Ball(color) {
+var NEAR_THRESHOLD_LOW = 0.4;
+var NEAR_THRESHOLD_HIGH = 0.5;
+
+function Ball(color, id) {
     this.color = color;
     this.distances = {};
+    this.outlier = {};
     this.acceleration = 0;
     this.filters = {
         acceleration: MA(movingAveragePeriod)
     };
     this.ballId = id;
     this.affectingTimestamp = 0;
-    // this.kalman = kalman();
+
+    this.neighbors = new Set();
 }
 
 Ball.prototype.updateMeasurement = function(data) {
+    var self = this;
+
     // TODO: this is because the sensors are sending these data on the rssi
     // this.distances = data.rssi;
-    var rssi = data.rssi;
-    for (var id in rssi) {
-        if (rssi.hasOwnProperty(id)) {
-            if (!this.filters[id]) {
-                // this.filters[id] = MA(movingAveragePeriod);
-                this.filters[id] = WMA(movingAveragePeriod, movingAverageWeights);
-                // this.filters[id] = ED();
-            }
-            // this.distances[id] = this.filters[id].filter(rssi[id]);
 
-            this.distances[id] = rssi[id];
+    var distances = data.rssi;
+
+    _.forOwn(distances, function(value, id) {
+        if (!self.filters[id]) {
+            // R: process noise; how noisy our system internally is
+            // Q: measurement noise; how noisy the measurements are
+            // self.filters[id] = kalman1d({R: 0.01, Q: 0.1});
+            self.filters[id] = MA(movingAveragePeriod);
         }
-    }
+
+        // value = rssi.toDistance(value);
+
+        if (!self.outlier[id]) {
+            self.outlier[id] = outlier(10);
+        }
+
+        if (!self.outlier[id].isOutlier(value)) {
+            // self.distances[id] = value;
+
+            var filteredDistance = self.filters[id].filter(value);
+            self.distances[id] = filteredDistance;
+
+
+            if (0 < filteredDistance &&
+                filteredDistance < NEAR_THRESHOLD_LOW) {
+                self.neighbors.add(id);
+            }
+            else if (filteredDistance > NEAR_THRESHOLD_HIGH) {
+                self.neighbors.delete(id);
+            }
+        }
+
+        self.outlier[id].push(value);
+    });
+
     this.acceleration = data.acceleration;
     // this.acceleration = this.kalman.filter(0, 1, 2);
+};
 
-    // var currTime = Date.now();
-    // if (currTime - this.time > 1000)
-    //     console.log(currTime - this.time);
-    // this.time = currTime;
+Ball.prototype.isNeighbor = function(otherBallId) {
+    return this.neighbors.has(otherBallId);
+};
+
+Ball.prototype.getNeighbors = function() {
+    return this.neighbors;
 };
 
 Ball.prototype.updateColor = function(color) {

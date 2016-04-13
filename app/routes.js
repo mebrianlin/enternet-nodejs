@@ -1,6 +1,6 @@
 var csv = require('./models/csv');
 var config = require('./config');
-var ballHandler = require('./models/mqtt-clients/omniscientBallClient');
+var ballHandler = require('./models/mqtt-clients/ballManagerClient');
 
 module.exports = function(app) {
     // server routes ===========================================================

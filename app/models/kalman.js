@@ -1,31 +1,34 @@
 var sylvester = require('sylvester');
 var Matrix = sylvester.Matrix;
+var KalmanFilter = require('kalmanjs').default;
 
 module.exports = {
     kalman1d: kalman1d,
     kalman2d: kalman2d
 };
 
-function kalman1d() {
-    var q = 10000; // process noise covariance
-    var r = 5; // measurement noise covariance
-    var x = -1; // value
-    var p = 5; // estimation error covariance
-    var k; // kalman gain
+function kalman1d(parameter) {
+    // var q = 0; // process noise covariance
+    // var r = 5; // measurement noise covariance
+    // var x = 0; // value
+    // var p = 0; // estimation error covariance
+    // var k; // kalman gain
 
-    var self = this;
+    // var self = this;
+    var kf = new KalmanFilter(parameter);
 
     function filter(measurement) {
-        // prediction update
-        // omit x = x
-        p = p + q;
-// console.log(x, k, measurement);
-        // measurement update
-        k = p / (p + r);
-        x = x + k * (measurement - x);
-        p = (1 - k) * p;
+        return kf.filter(measurement);
+//         // prediction update
+//         // omit x = x
+//         p = p + q;
+// // console.log(x, k, measurement);
+//         // measurement update
+//         k = p / (p + r);
+//         x = x + k * (measurement - x);
+//         p = (1 - k) * p;
 
-        return x;
+//         return x;
     }
 
     return {
@@ -108,12 +111,11 @@ function kalman2d() {
     var time = Date.now();
 
     // Event Loop //////////////////////////////////////
-    function filter(xMeasure, yMeasure, zMeasure) {
-        if (xMeasure === null || yMeasure === null || zMeasure === null) {
+    function filter(xMeasure, yMeasure) {
+        if (xMeasure === null || yMeasure === null) {
             console.error('Missing measured input.');
             console.log('x:', xMeasure);
             console.log('y:', yMeasure);
-            console.log('z:', zMeasure);
         }
         // change in time
         var now = Date.now();
@@ -153,8 +155,7 @@ function kalman2d() {
 
         return {
             x: x.e(1, 1),
-            y: x.e(2, 1),
-            z: x.e(3, 1)
+            y: x.e(2, 1)
         };
     }
 

@@ -1,3 +1,23 @@
-<div class="line-chart">
-    <div id="chartContainer"></div>
+<div class="row">
+    <div class="col-sm-10">
+        <div class="line-chart">
+            <div id="chartContainer"></div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="list-group col-sm-offset-2">
+            <a class="list-group-item" href="#"
+                ng-repeat="(id, ball) in ballData">
+                <h4 class="list-group-item-heading">{{id}}</h4>
+                <p class="list-group-item-text" ng-style="{ 'color': ball.color }">
+                    <div ng-repeat="(otherId, d) in ball.distances">
+                        {{otherId}}: {{d | number: 4}}
+                    </div>
+                    <!-- {{ball.distances | json: spacing}} -->
+                    {{ball.acceleration}}
+                    {{ball.neighbors| json: spacing}}
+                </p>
+            </a>
+        </div>
+    </div>
 </div>

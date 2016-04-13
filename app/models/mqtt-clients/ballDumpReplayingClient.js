@@ -14,11 +14,11 @@ var publishToTopic = 'ball/put/';
 var client;
 var ballsDump = [];
 var intervalId;
-var interval = 200;
+var interval = 50;
 var index = 0;
 
 var rl = readline.createInterface({
-    input: fs.createReadStream('balls-replay.dump')
+    input: fs.createReadStream('balls-4-bidirectional.dump')
 });
 
 rl.on('line', function(line) {

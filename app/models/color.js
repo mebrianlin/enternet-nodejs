@@ -1,4 +1,5 @@
 module.exports = {
+    White :[100, 100, 100],
     Black :[  0,   0,   0],
     Red   :[100,   0,   0],
     Green :[  0, 100,   0],

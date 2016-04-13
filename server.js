@@ -29,9 +29,12 @@ var fs = require('fs');
 var path = require('path');
 var normalizedPath = path.join(__dirname, 'app/models/mqtt-clients');
 fs.readdirSync(normalizedPath).forEach(function(file) {
+    if (!fs.statSync(path.join(normalizedPath, file)).isFile()) {
+        return;
+    }
     var index = file.lastIndexOf('.');
     var clientId = index < 0 ? file : file.substring(0, index);
-    var mqttClient = require('./app/models/mqtt-clients/' + file);
+    var mqttClient = require(path.join(normalizedPath, file));
     // a random affix so multiple clients will not clash
     var randomId = Math.random().toString().slice(-6);
 

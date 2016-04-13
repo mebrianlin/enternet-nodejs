@@ -34,8 +34,6 @@ function onConnect() {
 function onMessage(topic, message) {
     var str = message.toString();
 
-    console.log(str);
-
     var ballId = getId(topic, message);
 
     if (!messageCount[ballId]) {
@@ -47,13 +45,13 @@ function onMessage(topic, message) {
 
 function getId(topic, message) {
     var str = message.toString();
-
+// console.log(str);
     // TODO: forcefully fix malformed JSON, should fix it from the device side
-    // str = str.replace(' }}', '\"}}');
-    // var ballData = JSON.parse(str);
+    str = str.replace(' }}', '\"}}');
+    var ballData = JSON.parse(str);
 
-    // return ballData.id;
-    return 0;
+    return ballData.id;
+    // return 0;
 }
 
 function reportSpeed() {

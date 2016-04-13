@@ -4,7 +4,6 @@ var _ = require('lodash');
 var triangle = require('../triangle');
 var Ball = require('../ball');
 var color = require('../color');
-var rssi = require('../rssi');
 var logger = require('../logger');
 
 var subscribeToTopic = 'ball/put/#';
@@ -47,12 +46,12 @@ function ballWifiHandler(topic, message) {
     // console.log(ballData.rssi);
 
     // TODO: forcefully invert the rssi to get an estimate of distance for now
-    for (var r in ballData.rssi) {
-        if (ballData.rssi.hasOwnProperty(r)) {
-            // ballData.rssi[r] *= -1;
-            ballData.rssi[r] = rssi.toDistance(ballData.rssi[r]);
-        }
-    }
+    // for (var r in ballData.rssi) {
+    //     if (ballData.rssi.hasOwnProperty(r)) {
+    //         // ballData.rssi[r] *= -1;
+    //         ballData.rssi[r] = rssi.toDistance(ballData.rssi[r]);
+    //     }
+    // }
 
     var ballId = ballData.id;
     if (!balls[ballId]) {

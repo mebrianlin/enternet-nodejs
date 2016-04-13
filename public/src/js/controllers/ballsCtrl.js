@@ -8,8 +8,12 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
 
     var rssiCanvasData = {
         id: [
-            { source: 1, target: 2 },
-            { source: 3, target: 1 }
+            // { source: 5, target: 1 },
+            // { source: 5, target: 2 },
+            // { source: 5, target: 3 }
+            { source: 1, target: 5 },
+            { source: 2, target: 5 },
+            { source: 3, target: 5 }
         ],
         data: [],
         dataPoints: {}
@@ -29,14 +33,7 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
             legendText: id.source + '->' + id.target
         });
     });
-    console.log(rssiCanvasData);
-
-    function rssiToDistance(rssi) {
-        var n = 2;
-        var A = -40; // received signal strength (dBm) at 1 meter
-        // RSSI = -10nlogd + A
-        return Math.pow(10, (A - rssi) / (10 * n));
-    }
+    // console.log(rssiCanvasData);
 
     var canvasData = rssiCanvasData.data;
 
@@ -49,7 +46,7 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
             interlacedColor: "#F8F1E4",
             // tickLength: 10,
             minimum: 0,
-            maximum: 5,
+            maximum: 3,
             includeZero: false
         },
         data: canvasData
@@ -80,6 +77,14 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
             if (_.isEmpty(balls))
                 return;
 
+            // convert the color to css style
+            _.forOwn(balls, function(ball, id) {
+                var color = ball.color;
+                ball.color = 'rgb(' + color[0] + ',' +
+                    color[1] + ',' + color[2] + ')';
+            });
+            $scope.ballData = balls;
+
             ++t; // advance the time
             _.forEach(rssiCanvasData.id, function(id) {
                 if (_.isEmpty(balls[id.source]))
@@ -90,7 +95,7 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
                     rssiData.shift();
                 rssiData.push({
                     x: t,
-                    y: rssiToDistance(balls[id.source].distances[id.target])
+                    y: balls[id.source].distances[id.target]
                 });
             });
 

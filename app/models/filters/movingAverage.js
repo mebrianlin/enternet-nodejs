@@ -1,6 +1,6 @@
 var _ = require('lodash');
 
-module.exports = function(period, weights) {
+module.exports = function(period) {
     if (!period)
         throw new RangeError('Period should be greater than 0.');
 
