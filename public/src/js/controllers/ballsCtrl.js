@@ -11,9 +11,9 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
             // { source: 5, target: 1 },
             // { source: 5, target: 2 },
             // { source: 5, target: 3 }
-            { source: 1, target: 5 },
-            { source: 2, target: 5 },
-            { source: 3, target: 5 }
+            { source: 2, target: 3 },
+            { source: 3, target: 2 }
+            // { source: 3, target: 5 }
         ],
         data: [],
         dataPoints: {}

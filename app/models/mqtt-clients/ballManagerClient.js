@@ -1,4 +1,5 @@
 var mqtt = require('mqtt');
+var _ = require('lodash');
 
 var Ball = require('../ball');
 var color = require('../color');
@@ -11,7 +12,8 @@ module.exports = {
      connect: connect,
      end: end,
      getBalls: getBalls,
-     changeColor: changeColor
+     changeColor: changeColor,
+     publishColor: publishColor
 };
 
 var ballHandlers = [];
@@ -52,33 +54,45 @@ function end() {
 
 function onConnect() {
     client.subscribe(subscribeToTopic);
+
+    for (var i = 0; i < ballHandlers.length; ++i) {
+        if (ballHandlers[i].init)
+            ballHandlers[i].init();
+    }
 }
 
 function ballHandler(topic, message) {
     var str = message.toString();
-// console.log(str);
+console.log(str);
     // TODO: forcefully fix malformed JSON, should fix it from the device side
     str = str.replace(' }}', '\"}}');
     var ballData = JSON.parse(str);
 
     var ballId = ballData.id;
     if (!balls[ballId]) {
-        balls[ballId] = new Ball(color.White);
+        balls[ballId] = new Ball();
         // synchronoize the color on initializatoin
-        changeColor(ballId, color.White);
+        changeColor(ballId, color.Red);
     }
 
     balls[ballId].updateMeasurement(ballData);
 
     for (var i = 0; i < ballHandlers.length; ++i) {
-        ballHandlers[i].update(ballId);
+        if (ballHandlers[i].update)
+            ballHandlers[i].update(ballId);
+    }
+}
+
+// forcefully publish the color without updating the ball
+function publishColor(ballId, ballColor) {
+    if (client) {
+        client.publish(publishToTopic,
+            color.getPublishableColor(ballId, ballColor));
     }
 }
 
 function changeColor(ballId, ballColor) {
-// console.log(ballColor);
     balls[ballId].updateColor(ballColor);
-
-    client.publish(publishToTopic,
-        color.getPublishableColor(ballId, ballColor));
+    publishColor(ballId, ballColor);
 }
+

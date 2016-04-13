@@ -13,6 +13,9 @@
                     <div ng-repeat="(otherId, d) in ball.distances">
                         {{otherId}}: {{d | number: 4}}
                     </div>
+                    <div ng-repeat="(otherId, r) in ball.rssi">
+                        {{otherId}}: {{r}}
+                    </div>
                     <!-- {{ball.distances | json: spacing}} -->
                     {{ball.acceleration}}
                     {{ball.neighbors| json: spacing}}

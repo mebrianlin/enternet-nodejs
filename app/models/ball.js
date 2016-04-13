@@ -13,8 +13,8 @@ module.exports = Ball;
 var movingAveragePeriod = 3;
 var movingAverageWeights = [ 0.1, 0.2, 0.7 ];
 
-var NEAR_THRESHOLD_LOW = 0.4;
-var NEAR_THRESHOLD_HIGH = 0.5;
+var NEAR_THRESHOLD_LOW = 0.3;
+var NEAR_THRESHOLD_HIGH = 0.4;
 
 function Ball(color, id) {
     this.color = color;
@@ -35,6 +35,7 @@ Ball.prototype.updateMeasurement = function(data) {
 
     // TODO: this is because the sensors are sending these data on the rssi
     // this.distances = data.rssi;
+    this.rssi = _.cloneDeep(data.rssi);
 
     var distances = data.rssi;
 
@@ -46,15 +47,18 @@ Ball.prototype.updateMeasurement = function(data) {
             self.filters[id] = MA(movingAveragePeriod);
         }
 
-        // value = rssi.toDistance(value);
+        // convert rssi to distance
+        value = rssi.toDistance(value);
 
         if (!self.outlier[id]) {
             self.outlier[id] = outlier(10);
         }
 
         if (!self.outlier[id].isOutlier(value)) {
+            // no filtering
             // self.distances[id] = value;
 
+            // filtering
             var filteredDistance = self.filters[id].filter(value);
             self.distances[id] = filteredDistance;
 

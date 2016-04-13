@@ -6,6 +6,7 @@ module.exports = {
     Blue  :[  0,   0, 100],
     Yellow:[100, 100,   0],
     Purple: [182, 67, 223],
+    Faint: [1, 2, 1],
     getRandomColor: getRandomColor,
     getPublishableColor: getPublishableColor
 };
@@ -34,6 +35,7 @@ function getPublishableColor(ballId, color) {
 }
 
 function zeroFill(number, size) {
+    number = Math.floor(number);
     number = number.toString();
     while (number.length < size)
         number = '0' + number;
