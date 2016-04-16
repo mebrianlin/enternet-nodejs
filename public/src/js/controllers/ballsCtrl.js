@@ -8,12 +8,18 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
 
     var rssiCanvasData = {
         id: [
-            // { source: 5, target: 1 },
-            // { source: 5, target: 2 },
-            // { source: 5, target: 3 }
+            { source: 1, target: 2 },
+            { source: 1, target: 3 },
+            { source: 1, target: 5 },
+            { source: 2, target: 1 },
             { source: 2, target: 3 },
-            { source: 3, target: 2 }
-            // { source: 3, target: 5 }
+            { source: 2, target: 5 },
+            { source: 3, target: 1 },
+            { source: 3, target: 2 },
+            { source: 3, target: 5 },
+            { source: 5, target: 1 },
+            { source: 5, target: 2 },
+            { source: 5, target: 3 }
         ],
         data: [],
         dataPoints: {}
@@ -46,7 +52,7 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
             interlacedColor: "#F8F1E4",
             // tickLength: 10,
             minimum: 0,
-            maximum: 3,
+            maximum: 1,
             includeZero: false
         },
         data: canvasData

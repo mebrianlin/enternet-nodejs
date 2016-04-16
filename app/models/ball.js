@@ -43,9 +43,13 @@ Ball.prototype.updateMeasurement = function(data) {
         if (!self.filters[id]) {
             // R: process noise; how noisy our system internally is
             // Q: measurement noise; how noisy the measurements are
-            // self.filters[id] = kalman1d({R: 0.01, Q: 0.1});
-            self.filters[id] = MA(movingAveragePeriod);
+            self.filters[id] = kalman1d({R: 0.01, Q: 0.1});
+            // self.filters[id] = MA(movingAveragePeriod);
         }
+
+        // if the rssi value is not valid, don't update it
+        if (!rssi.isValid(value))
+            return;
 
         // convert rssi to distance
         value = rssi.toDistance(value);

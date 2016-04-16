@@ -63,7 +63,7 @@ function onConnect() {
 
 function ballHandler(topic, message) {
     var str = message.toString();
-console.log(str);
+// console.log(str);
     // TODO: forcefully fix malformed JSON, should fix it from the device side
     str = str.replace(' }}', '\"}}');
     var ballData = JSON.parse(str);
@@ -87,7 +87,8 @@ console.log(str);
 function publishColor(ballId, ballColor) {
     if (client) {
         client.publish(publishToTopic,
-            color.getPublishableColor(ballId, ballColor));
+            color.getPublishableColor(ballId, ballColor),
+            { qos: 1 });
     }
 }
 

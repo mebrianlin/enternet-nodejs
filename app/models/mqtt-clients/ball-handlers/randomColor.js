@@ -17,7 +17,7 @@ function init() {
 
 setInterval(function() {
     changeColor();
-}, 200);
+}, 500);
 
 }
 

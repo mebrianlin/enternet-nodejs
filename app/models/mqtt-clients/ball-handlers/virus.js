@@ -44,7 +44,9 @@ function startGame(){
             changeColor(bId, color.Green);
         }
     }
-    detectVirusFunctionId = setInterval(detectVirus, 1000);
+    setTimeout(function() {
+        detectVirusFunctionId = setInterval(detectVirus, 100);
+    }, 2000);
 }
 var timeThreshold = 3000;
 
@@ -74,16 +76,11 @@ function detectVirus(){
                 if(Date.now() - balls[abId].affectingTimestamp >= timeThreshold){
                     virus[abId] = true;
                     changeColor(abId, color.Red);
-                    console.log('\u0007');
+                    // console.log('\u0007');
                     delete affecting[abId];
                 }
-                // else {
-                //     var ratio = (Date.now() - balls[abId].affectingTimestamp) / timeThreshold;
-                //     changeColor(abId, [
-                //         100 * ratio,
-                //         100 * (1 - ratio),
-                //         0]);
-                // }
+                // do not use gradient effect, as it is sending
+                // too many messages and the balls will crash
                 break;
             }
         }
