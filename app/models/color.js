@@ -36,6 +36,8 @@ function getPublishableColor(ballId, color) {
 
 function zeroFill(number, size) {
     number = Math.floor(number);
+    number = Math.min(number, 255);
+    number = Math.max(0, number);
     number = number.toString();
     while (number.length < size)
         number = '0' + number;

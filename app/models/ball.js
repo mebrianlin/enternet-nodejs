@@ -79,8 +79,8 @@ Ball.prototype.updateMeasurement = function(data) {
         self.outlier[id].push(value);
     });
 
-    this.acceleration = data.acceleration;
-    // this.acceleration = this.kalman.filter(0, 1, 2);
+    this.acceleration = this.filters.acceleration.filter(
+        data.acceleration);
 };
 
 Ball.prototype.isNeighbor = function(otherBallId) {
@@ -89,6 +89,11 @@ Ball.prototype.isNeighbor = function(otherBallId) {
 
 Ball.prototype.getNeighbors = function() {
     return this.neighbors;
+};
+
+Ball.prototype.getColor = function(color) {
+    var c = this.color;
+    return [c[0], c[1], c[2]];
 };
 
 Ball.prototype.updateColor = function(color) {

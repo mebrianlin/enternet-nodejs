@@ -3,6 +3,7 @@ var _ = require('lodash');
 
 var Ball = require('../ball');
 var color = require('../color');
+var logger = require('../logger');
 
 var subscribeToTopic = 'ball/put/#';
 var publishToTopic = 'ball/get';
@@ -22,15 +23,21 @@ var fs = require('fs');
 var path = require('path');
 var normalizedPath = path.join(__dirname, 'ball-handlers');
 
+var mqttClientCount = 0;
 fs.readdirSync(normalizedPath).forEach(function(file) {
     if (!fs.statSync(path.join(normalizedPath, file)).isFile()) {
         return;
     }
     var handler = require(path.join(normalizedPath, file));
     if (handler.enabled) {
+        logger.info('Enabling client ' + file);
         ballHandlers.push(handler);
+        ++mqttClientCount;
     }
 });
+if (mqttClientCount > 1) {
+    logger.warn(mqttClientCount + ' mqtt clients are enabled at the same time');
+}
 
 var client;
 var balls = {};
@@ -93,6 +100,10 @@ function publishColor(ballId, ballColor) {
 }
 
 function changeColor(ballId, ballColor) {
+    for (var i = 0; i < ballColor.length; ++i) {
+        ballColor[i] = Math.min(ballColor[i], 255);
+        ballColor[i] = Math.max(ballColor[i], 0);
+    }
     balls[ballId].updateColor(ballColor);
     publishColor(ballId, ballColor);
 }

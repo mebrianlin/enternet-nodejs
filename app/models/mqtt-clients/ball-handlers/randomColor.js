@@ -27,6 +27,7 @@ function changeColor() {
     }
     idx = (idx % MAX_INDEX) + 1;
     ballManager.publishColor(idx, c);
+
     // for (var i = 1; i <= MAX_INDEX; ++i) {
     //     client.publish(publishToTopic,
     //         color.getPublishableColor(i, c));

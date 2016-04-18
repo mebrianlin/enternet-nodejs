@@ -28,6 +28,7 @@ var port = process.env.PORT || config.ports.httpPort; // set our port
 var fs = require('fs');
 var path = require('path');
 var normalizedPath = path.join(__dirname, 'app/models/mqtt-clients');
+
 fs.readdirSync(normalizedPath).forEach(function(file) {
     if (!fs.statSync(path.join(normalizedPath, file)).isFile()) {
         return;
@@ -39,8 +40,8 @@ fs.readdirSync(normalizedPath).forEach(function(file) {
     var randomId = Math.random().toString().slice(-6);
 
     if (mqttClient.enabled) {
-        logger.info('Enabling client ' + clientId);
-        mqttClient.connect(config.mqttBrokers.localhost.mqttUrl, {
+        logger.info('Enabling mqtt client ' + clientId);
+        mqttClient.connect(config.mqttBrokers.shiftr.mqttUrl, {
             clientId: clientId + randomId
         });
     }
