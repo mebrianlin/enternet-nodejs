@@ -6,7 +6,7 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
     var updateInterval = 100;
     var LENGTH = 50;
 
-    var rssiCanvasData = {
+    var rssiMetaData = {
         id: [
             { source: 1, target: 2 },
             { source: 1, target: 3 },
@@ -24,26 +24,44 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
         data: [],
         dataPoints: {}
     };
+    var accelerationMetaData = {
+        id: [ 1, 2, 3, 4, 5 ],
+        data: [],
+        dataPoints: {}
+    };
 
-    _.forEach(rssiCanvasData.id, function(id) {
+    _.forEach(rssiMetaData.id, function(id) {
         var rssiData = [];
-        if (_.isEmpty(rssiCanvasData.dataPoints[id.source])) {
-            rssiCanvasData.dataPoints[id.source] = {};
+        if (_.isEmpty(rssiMetaData.dataPoints[id.source])) {
+            rssiMetaData.dataPoints[id.source] = {};
         }
-        rssiCanvasData.dataPoints[id.source][id.target] = rssiData;
+        rssiMetaData.dataPoints[id.source][id.target] = rssiData;
 
-        rssiCanvasData.data.push({
+        rssiMetaData.data.push({
             type: 'line',
             dataPoints: rssiData,
             showInLegend: true,
             legendText: id.source + '->' + id.target
         });
     });
-    // console.log(rssiCanvasData);
+    _.forEach(accelerationMetaData.id, function(id) {
+        var accelerationData = [];
+        accelerationMetaData.dataPoints[id] = accelerationData;
 
-    var canvasData = rssiCanvasData.data;
+        accelerationMetaData.data.push({
+            type: 'line',
+            dataPoints: accelerationData,
+            showInLegend: true,
+            legendText: id.toString()
+        });
+    });
+    // console.log(rssiMetaData);
 
-    $scope.chart = new CanvasJS.Chart('chartContainer', {
+    var canvasData = rssiMetaData.data;
+    var accelerationData = accelerationMetaData.data;
+
+    $scope.charts = [];
+    $scope.charts.push(new CanvasJS.Chart('rssiChart', {
         title:{
             text: 'RSSI'
         },
@@ -70,9 +88,23 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
         //         legendText: '1->2'
         //     }
         // ]
-    });
+    }));
+    $scope.charts.push(new CanvasJS.Chart('accelerationChart', {
+        title:{
+            text: 'Acceleration'
+        },
+        axisY:{
+            title: "m/s^2",
+            interlacedColor: "#F8F1E4",
+            // tickLength: 10,
+            minimum: 0,
+            maximum: 20,
+            includeZero: false
+        },
+        data: accelerationData
+    }));
 
-    $scope.chart.render();
+    renderCharts();
     var t = 0;
 
     $interval(function() {
@@ -92,11 +124,11 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
             $scope.ballData = balls;
 
             ++t; // advance the time
-            _.forEach(rssiCanvasData.id, function(id) {
+            _.forEach(rssiMetaData.id, function(id) {
                 if (_.isEmpty(balls[id.source]))
                     return;
 
-                var rssiData = rssiCanvasData.dataPoints[id.source][id.target];
+                var rssiData = rssiMetaData.dataPoints[id.source][id.target];
                 if (rssiData.length > LENGTH)
                     rssiData.shift();
                 rssiData.push({
@@ -105,10 +137,28 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
                 });
             });
 
-            $scope.chart.render();
+            _.forEach(accelerationMetaData.id, function(id) {
+                if (_.isEmpty(balls[id]))
+                    return;
+
+                var accelerationData = accelerationMetaData.dataPoints[id];
+                if (accelerationData.length > LENGTH)
+                    accelerationData.shift();
+                accelerationData.push({
+                    x: t,
+                    y: balls[id].acceleration
+                });
+            });
+
+            renderCharts();
         });
     }, updateInterval);
 
+    function renderCharts() {
+        for (var i = 0; i < $scope.charts.length; ++i) {
+            $scope.charts[i].render();
+        }
+    }
 
     $scope.changeColor = function() {
         throw new Error('Color change is not implemented.');

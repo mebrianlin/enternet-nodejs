@@ -29,6 +29,9 @@ module.exports = function(grunt) {
 
         // check all js files for errors
         jshint: {
+            options: {
+                "esversion": 6
+            },
             all: ['Gruntfile.js', 'server.js', 'public/src/js/**/*.js', 'app/**/*.js']
         },
 

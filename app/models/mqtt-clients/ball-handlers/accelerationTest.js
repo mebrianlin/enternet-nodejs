@@ -2,28 +2,30 @@ var ballManager = require('../ballManagerClient');
 var color = require('../../color');
 
 module.exports = {
-    // enabled: true,
+    enabled: true,
     update: update
 };
 
+var moving = {
+
+};
+
 function update(ballId) {
-    // if (ballId == 5) {
     try {
         var balls = ballManager.getBalls();
 
-        var newColor = balls[ballId].getColor();
         var a = balls[ballId].acceleration;
-        if (a > 10) {
-            newColor[0] += 30;
+        if (a > 12) {
+            if (!moving[ballId]) {
+                // ballManager.changeColor(ballId, color.getRandomColor());
+                ballManager.changeColor(ballId, color.Blue);
+                moving[ballId] = true;
+            }
         }
         else {
-            newColor[0] -= 30;
+            ballManager.changeColor(ballId, color.Black);
+            moving[ballId] = false;
         }
-        newColor[2] = 50;
-        newColor[3] = 50;
-        ballManager.changeColor(ballId, newColor);
-        if (ballId === '2')
-            console.log(newColor);
         // var a = (balls[ballId].acceleration - 9) * 10;
         // var newColor = [a,10,10];
         // ballManager.changeColor(ballId, newColor);
@@ -32,5 +34,4 @@ function update(ballId) {
     catch (ex) {
 
     }
-    // }
 }

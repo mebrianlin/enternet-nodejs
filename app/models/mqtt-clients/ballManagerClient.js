@@ -66,6 +66,32 @@ function onConnect() {
         if (ballHandlers[i].init)
             ballHandlers[i].init();
     }
+    loop();
+}
+
+function loop() {
+    var numBalls = _.size(balls) || 1;
+    var period = 2000 / numBalls;
+
+    var iterator = foo();
+    iterator.next();
+    // console.log('yield');
+    setTimeout(loop, period);
+}
+
+function* foo() {
+    while (true) {
+        if (_.isEmpty(balls))
+            yield;
+        else {
+            for (var id in balls) {
+                if (balls.hasOwnProperty(id)) {
+                    publishColor(id, balls[id].color);
+                    yield;
+                }
+            }
+        }
+    }
 }
 
 function ballHandler(topic, message) {

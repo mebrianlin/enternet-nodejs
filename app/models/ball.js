@@ -22,7 +22,7 @@ function Ball(color, id) {
     this.outlier = {};
     this.acceleration = 0;
     this.filters = {
-        acceleration: MA(movingAveragePeriod)
+        acceleration: kalman1d({R: 0.01, Q: 0.01})
     };
     this.ballId = id;
     this.affectingTimestamp = 0;
@@ -79,8 +79,9 @@ Ball.prototype.updateMeasurement = function(data) {
         self.outlier[id].push(value);
     });
 
-    this.acceleration = this.filters.acceleration.filter(
-        data.acceleration);
+    // this.acceleration = this.filters.acceleration.filter(
+    //     data.acceleration);
+    this.acceleration = parseFloat(data.acceleration);
 };
 
 Ball.prototype.isNeighbor = function(otherBallId) {
