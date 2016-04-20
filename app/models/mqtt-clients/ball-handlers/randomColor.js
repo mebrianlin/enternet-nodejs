@@ -5,7 +5,6 @@ var color = require('../../color');
 var ballManager = require('../ballManagerClient');
 
 module.exports = {
-     // enabled: true,
      init: init
 };
 

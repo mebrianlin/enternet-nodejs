@@ -2,9 +2,12 @@ var _ = require('lodash');
 
 var ballManager = require('../ballManagerClient');
 var color = require('../../color');
+var noFilter = require('../../filters/noFilter');
+var kalman1d = require('../../kalman').kalman1d;
 
 module.exports = {
-    // enabled: true
+    init: init,
+    getFilters: getFilters
 };
 
 var virus = {};
@@ -13,7 +16,7 @@ var normalBalls = {};
 // detectVirusFunction id
 var detectVirusFunctionId;
 
-if (module.exports.enabled) {
+function init() {
     setTimeout(startGame, 1000);
 }
 
@@ -132,4 +135,11 @@ function detectVirus(){
 
 function changeColor(ballId, ballColor) {
     ballManager.changeColor(ballId, ballColor);
+}
+
+function getFilters() {
+    return {
+        acceleration: kalman1d({R: 0.01, Q: 0.01}),
+        distance: noFilter() // kalman1d({R: 0.01, Q: 0.01})
+    };
 }

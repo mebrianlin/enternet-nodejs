@@ -9,17 +9,29 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
     var rssiMetaData = {
         id: [
             { source: 1, target: 2 },
-            // { source: 1, target: 3 },
-            // { source: 1, target: 5 },
+            { source: 1, target: 3 },
+            { source: 1, target: 4 },
+            { source: 1, target: 5 },
+
             { source: 2, target: 1 },
-            // { source: 2, target: 3 },
-            // { source: 2, target: 5 },
-            // { source: 3, target: 1 },
-            // { source: 3, target: 2 },
-            // { source: 3, target: 5 },
-            // { source: 5, target: 1 },
-            // { source: 5, target: 2 },
-            // { source: 5, target: 3 }
+            { source: 2, target: 3 },
+            { source: 2, target: 4 },
+            { source: 2, target: 5 },
+
+            { source: 3, target: 1 },
+            { source: 3, target: 2 },
+            { source: 3, target: 4 },
+            { source: 3, target: 5 },
+
+            { source: 4, target: 1 },
+            { source: 4, target: 2 },
+            { source: 4, target: 3 },
+            { source: 4, target: 5 },
+
+            { source: 5, target: 1 },
+            { source: 5, target: 2 },
+            { source: 5, target: 3 },
+            { source: 5, target: 4 }
         ],
         data: [],
         dataPoints: {}

@@ -1,6 +1,7 @@
 var _ = require('lodash');
 
 var rssi = require('./rssi');
+var BLACK = require('./color').Black;
 
 var kalman1d = require('./kalman').kalman1d;
 var outlier = require('./filters/outlier');
@@ -14,17 +15,28 @@ var movingAveragePeriod = 3;
 var movingAverageWeights = [ 0.1, 0.2, 0.7 ];
 
 var NEAR_THRESHOLD_LOW = 0.4;
-var NEAR_THRESHOLD_HIGH = 0.5;
+var NEAR_THRESHOLD_HIGH = 0.45;
 
-function Ball(color, id) {
-    this.color = color;
+function getDefaultFilters() {
+    return {
+        acceleration: kalman1d({R: 0.01, Q: 0.01}),
+        distance: kalman1d({R: 0.01, Q: 0.1})
+        // distance: { filter: function(value) { return value; } }
+    };
+}
+
+function Ball(color, id, getFilters) {
+    this.color = color || BLACK;
+    this.ballId = id || 0;
+    this.getFilters = getFilters || getDefaultFilters;
+
     this.distances = {};
     this.outlier = {};
     this.acceleration = 0;
     this.filters = {
-        acceleration: kalman1d({R: 0.01, Q: 0.01})
+        acceleration: this.getFilters().acceleration
+        // acceleration: kalman1d({R: 0.01, Q: 0.01})
     };
-    this.ballId = id;
     this.affectingTimestamp = 0;
 
     this.neighbors = new Set();
@@ -43,7 +55,8 @@ Ball.prototype.updateMeasurement = function(data) {
         if (!self.filters[id]) {
             // R: process noise; how noisy our system internally is
             // Q: measurement noise; how noisy the measurements are
-            self.filters[id] = kalman1d({R: 0.01, Q: 0.01});
+            self.filters[id] = self.getFilters().distance;
+            // self.filters[id] = kalman1d({R: 0.01, Q: 0.1});
             // self.filters[id] = MA(movingAveragePeriod);
         }
 
@@ -60,10 +73,10 @@ Ball.prototype.updateMeasurement = function(data) {
 
         if (!self.outlier[id].isOutlier(value)) {
             // no filtering
-            var filteredDistance = value;
+            // var filteredDistance = value;
 
             // filtering
-            // var filteredDistance = self.filters[id].filter(value);
+            var filteredDistance = self.filters[id].filter(value);
 
             self.distances[id] = filteredDistance;
 
@@ -91,6 +104,10 @@ Ball.prototype.isNeighbor = function(otherBallId) {
 
 Ball.prototype.getNeighbors = function() {
     return this.neighbors;
+};
+
+Ball.prototype.getDistance = function(otherBallId) {
+    return this.distances[otherBallId];
 };
 
 Ball.prototype.getColor = function(color) {
