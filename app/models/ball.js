@@ -13,8 +13,8 @@ module.exports = Ball;
 var movingAveragePeriod = 3;
 var movingAverageWeights = [ 0.1, 0.2, 0.7 ];
 
-var NEAR_THRESHOLD_LOW = 0.3;
-var NEAR_THRESHOLD_HIGH = 0.4;
+var NEAR_THRESHOLD_LOW = 0.4;
+var NEAR_THRESHOLD_HIGH = 0.5;
 
 function Ball(color, id) {
     this.color = color;
@@ -43,7 +43,7 @@ Ball.prototype.updateMeasurement = function(data) {
         if (!self.filters[id]) {
             // R: process noise; how noisy our system internally is
             // Q: measurement noise; how noisy the measurements are
-            self.filters[id] = kalman1d({R: 0.01, Q: 0.1});
+            self.filters[id] = kalman1d({R: 0.01, Q: 0.01});
             // self.filters[id] = MA(movingAveragePeriod);
         }
 
@@ -60,10 +60,11 @@ Ball.prototype.updateMeasurement = function(data) {
 
         if (!self.outlier[id].isOutlier(value)) {
             // no filtering
-            // self.distances[id] = value;
+            var filteredDistance = value;
 
             // filtering
-            var filteredDistance = self.filters[id].filter(value);
+            // var filteredDistance = self.filters[id].filter(value);
+
             self.distances[id] = filteredDistance;
 
 

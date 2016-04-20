@@ -1,5 +1,6 @@
 var mqtt = require('mqtt');
 var _ = require('lodash');
+var fs = require('fs');
 
 var Ball = require('../ball');
 var color = require('../color');
@@ -14,7 +15,10 @@ module.exports = {
      end: end,
      getBalls: getBalls,
      changeColor: changeColor,
-     publishColor: publishColor
+     publishColor: publishColor,
+     getRecord: getRecord,
+     getRecords: getRecords,
+     updateRecord: updateRecord
 };
 
 var ballHandlers = [];
@@ -41,6 +45,10 @@ if (mqttClientCount > 1) {
 
 var client;
 var balls = {};
+var records = {
+
+};
+readRecord();
 
 function getBalls() {
     return balls;
@@ -66,27 +74,29 @@ function onConnect() {
         if (ballHandlers[i].init)
             ballHandlers[i].init();
     }
-    loop();
+    // loop();
 }
 
 function loop() {
     var numBalls = _.size(balls) || 1;
     var period = 2000 / numBalls;
 
-    var iterator = foo();
+    var iterator = updateOneBall();
     iterator.next();
-    // console.log('yield');
     setTimeout(loop, period);
 }
 
-function* foo() {
+function* updateOneBall() {
+var i = 1;
+while (true) { console.log(i++); yield;}
     while (true) {
         if (_.isEmpty(balls))
             yield;
         else {
             for (var id in balls) {
+console.log(id);
                 if (balls.hasOwnProperty(id)) {
-                    publishColor(id, balls[id].color);
+                    // publishColor(id, balls[id].color);
                     yield;
                 }
             }
@@ -119,7 +129,7 @@ function ballHandler(topic, message) {
 // forcefully publish the color without updating the ball
 function publishColor(ballId, ballColor) {
     if (client) {
-        client.publish(publishToTopic,
+        client.publish(publishToTopic + ballId,
             color.getPublishableColor(ballId, ballColor),
             { qos: 1 });
     }
@@ -134,3 +144,39 @@ function changeColor(ballId, ballColor) {
     publishColor(ballId, ballColor);
 }
 
+function getRecord(key) {
+    return records[key];
+}
+
+function getRecords() {
+    return records;
+}
+
+function updateRecord(key, record) {
+    records[key] = record;
+    // write to file
+    var text = JSON.stringify(record);
+    fs.writeFile('leaderboard.txt', text, function(err) {
+        if (err) {
+            console.log(err);
+            return;
+        }
+
+        console.log('Leaderboard written to file.');
+    });
+}
+
+function readRecord() {
+    // read from file
+    fs.readFile('leaderboard.txt', 'utf8', function (err, data) {
+        if (err) {
+            return console.log(err);
+        }
+        try {
+            records = JSON.parse(data);
+        }
+        catch (ex) {
+            console.error(ex);
+        }
+    });
+}

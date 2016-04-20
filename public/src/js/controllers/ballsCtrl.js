@@ -9,17 +9,17 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
     var rssiMetaData = {
         id: [
             { source: 1, target: 2 },
-            { source: 1, target: 3 },
-            { source: 1, target: 5 },
+            // { source: 1, target: 3 },
+            // { source: 1, target: 5 },
             { source: 2, target: 1 },
-            { source: 2, target: 3 },
-            { source: 2, target: 5 },
-            { source: 3, target: 1 },
-            { source: 3, target: 2 },
-            { source: 3, target: 5 },
-            { source: 5, target: 1 },
-            { source: 5, target: 2 },
-            { source: 5, target: 3 }
+            // { source: 2, target: 3 },
+            // { source: 2, target: 5 },
+            // { source: 3, target: 1 },
+            // { source: 3, target: 2 },
+            // { source: 3, target: 5 },
+            // { source: 5, target: 1 },
+            // { source: 5, target: 2 },
+            // { source: 5, target: 3 }
         ],
         data: [],
         dataPoints: {}
@@ -66,11 +66,11 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
             text: 'RSSI'
         },
         axisY:{
-            title: "Distance (m)",
+            title: "Distance",
             interlacedColor: "#F8F1E4",
             // tickLength: 10,
             minimum: 0,
-            maximum: 1,
+            maximum: 5,
             includeZero: false
         },
         data: canvasData

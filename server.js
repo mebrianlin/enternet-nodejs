@@ -41,7 +41,7 @@ fs.readdirSync(normalizedPath).forEach(function(file) {
 
     if (mqttClient.enabled) {
         logger.info('Enabling mqtt client ' + clientId);
-        mqttClient.connect(config.mqttBrokers.shiftr.mqttUrl, {
+        mqttClient.connect(config.mqttBrokers.localhost.mqttUrl, {
             clientId: clientId + randomId
         });
     }
