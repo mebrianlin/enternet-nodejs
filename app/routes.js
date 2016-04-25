@@ -24,6 +24,16 @@ module.exports = function(app) {
         res.send(balls);
     });
 
+    app.get('/api/records/get', function(req, res) {
+        var records = ballHandler.getRecords();
+        res.send(records);
+    });
+
+    app.get('/api/restart', function(req, res) {
+        ballHandler.restart();
+        res.send('Restarted');
+    });
+
     // frontend routes =========================================================
     // route to handle all angular requests
     app.get('*', function(req, res) {

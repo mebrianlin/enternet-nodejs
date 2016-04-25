@@ -14,8 +14,8 @@ module.exports = Ball;
 var movingAveragePeriod = 3;
 var movingAverageWeights = [ 0.1, 0.2, 0.7 ];
 
-var NEAR_THRESHOLD_LOW = 0.4;
-var NEAR_THRESHOLD_HIGH = 0.45;
+var NEAR_THRESHOLD_LOW = 0.6;
+var NEAR_THRESHOLD_HIGH = 0.7;
 
 function getDefaultFilters() {
     return {

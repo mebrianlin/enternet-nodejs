@@ -16,7 +16,7 @@ function init() {
 
 setInterval(function() {
     changeColor();
-}, 200);
+}, 400);
 
 }
 
@@ -25,7 +25,7 @@ function changeColor() {
         c = color.getRandomColor();
     }
     idx = (idx % MAX_INDEX) + 1;
-    ballManager.publishColor(idx, c);
+    ballManager.changeColor(idx, c);
 
     // for (var i = 1; i <= MAX_INDEX; ++i) {
     //     client.publish(publishToTopic,

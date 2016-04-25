@@ -3,12 +3,17 @@ var color = require('../../color');
 var kalman1d = require('../../kalman').kalman1d;
 
 module.exports = {
+    init: init,
     update: update,
     getFilters: getFilters
 };
 
 var STATION_ID = 1;
 var MAX_DISTANCE = 1;
+
+function init() {
+    ballManager.changeColor(STATION_ID, color.Blue);
+}
 
 function update(ballId) {
     if (ballId == STATION_ID)
@@ -32,6 +37,6 @@ function update(ballId) {
 function getFilters() {
     return {
         acceleration: kalman1d({R: 0.01, Q: 0.01}),
-        distance: kalman1d({R: 0.01, Q: 0.1})
+        distance: kalman1d({R: 0.01, Q: 0.01})
     };
 }

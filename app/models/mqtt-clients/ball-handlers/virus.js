@@ -7,7 +7,8 @@ var kalman1d = require('../../kalman').kalman1d;
 
 module.exports = {
     init: init,
-    getFilters: getFilters
+    getFilters: getFilters,
+    restart: restart
 };
 
 var virus = {};
@@ -22,6 +23,10 @@ function init() {
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function restart() {
+    startGame();
 }
 
 function startGame(){
@@ -51,7 +56,7 @@ function startGame(){
         detectVirusFunctionId = setInterval(detectVirus, 100);
     }, 2000);
 }
-var timeThreshold = 3000;
+var timeThreshold = 1500;
 
 function detectVirus(){
     var balls = ballManager.getBalls();

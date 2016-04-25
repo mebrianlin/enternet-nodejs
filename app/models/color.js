@@ -1,11 +1,12 @@
 module.exports = {
-    White :[100, 100, 100],
+    White :[255, 255, 255],
     Black :[  0,   0,   0],
-    Red   :[100,   0,   0],
-    Green :[  0, 100,   0],
-    Blue  :[  0,   0, 100],
-    Yellow:[100, 100,   0],
+    Red   :[255,   0,   0],
+    Green :[  0, 255,   0],
+    Blue  :[  0,   0, 255],
+    Yellow:[255, 255,   0],
     Purple: [182, 67, 223],
+    Cyan: [50, 255, 255],
     Faint: [1, 2, 1],
     getRandomColor: getRandomColor,
     getPublishableColor: getPublishableColor

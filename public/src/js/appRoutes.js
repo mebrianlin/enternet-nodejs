@@ -23,9 +23,17 @@ angular.module('appRoutes', [])
         templateUrl: 'views/balls.html',
         controller: 'ballsController'
     })
+    .when('/records', {
+        templateUrl: 'views/records.html',
+        controller: 'recordsController'
+    })
     .when('/triangle', {
         templateUrl: 'views/triangle.html',
         controller: 'triangleController'
+    })
+    .when('/simon', {
+        templateUrl: 'views/simon.html',
+        controller: 'simonController'
     })
     .otherwise({
         templateUrl: 'views/error.html'

@@ -11,7 +11,8 @@ var moving = {
 
 var HIGH_THRESHOLD = 12;
 var LOW_THRESHOLD = 8;
-var MAX_RECORDS = 50;
+var MAX_RECORDS = 10;
+var MIN_TIME = 1000; // need to be at least 1000 ms
 var lastBelowThresholdTime = {
 
 };
@@ -43,9 +44,14 @@ function update(ballId) {
             ballManager.changeColor(ballId, color.Black);
             if (lastBelowThresholdTime[ballId]) {
                 var time = Date.now() - lastBelowThresholdTime[ballId];
+                delete lastBelowThresholdTime[ballId];
+
+                // if (time < MIN_TIME) {
+                //     return;
+                // }
+
                 console.log('BallID ' + ballId + ' below threshold for ');
                 console.log(time);
-                delete lastBelowThresholdTime[ballId];
 
                 // update record
                 var record = ballManager.getRecord('acceleration');
@@ -63,12 +69,16 @@ function update(ballId) {
                 if (i === record.length) {
                     record.push(time);
                 }
-                if (record.length >= MAX_RECORDS) {
-                    record.shift();
+                if (record.length > MAX_RECORDS) {
+                    record.pop();
                 }
-                console.log(record);
-                // console.log('Rank: ' + (i + 1));
+                console.log('Rank: ' + (i + 1));
+console.log(record);
                 ballManager.updateRecord('acceleration', record);
+                ballManager.publish('leaderboard/acceleration', JSON.stringify({
+                    rank: (i + 1),
+                    records: record
+                }));
             }
         }
 

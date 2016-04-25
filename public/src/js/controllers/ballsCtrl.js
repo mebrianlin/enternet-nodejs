@@ -132,6 +132,7 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
                 var color = ball.color;
                 ball.color = 'rgb(' + color[0] + ',' +
                     color[1] + ',' + color[2] + ')';
+console.log(ball.color);
             });
             $scope.ballData = balls;
 

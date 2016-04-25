@@ -7,5 +7,7 @@ angular.module('iotApp', [
     'mqttCtrl',
     'wifiCtrl',
     'ballsCtrl',
-    'triangleCtrl'
+    'triangleCtrl',
+    'recordsCtrl',
+    'simonCtrl'
 ]);

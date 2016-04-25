@@ -8,6 +8,15 @@ var logger = require('../logger');
 
 var subscribeToTopic = 'ball/put/#';
 var publishToTopic = 'ball/get';
+var BALL_UPDATE_INTERVAL = 400; // default to 200
+
+var MQTT_CLIENT_NAME = 'noColor';
+// var MQTT_CLIENT_NAME = 'accelerationTest';
+// var MQTT_CLIENT_NAME = 'bowling';
+// var MQTT_CLIENT_NAME = 'proximityTest';
+// var MQTT_CLIENT_NAME = 'randomColor';
+// var MQTT_CLIENT_NAME = 'simon';
+// var MQTT_CLIENT_NAME = 'virus';
 
 module.exports = {
      enabled: true,
@@ -15,10 +24,11 @@ module.exports = {
      end: end,
      getBalls: getBalls,
      changeColor: changeColor,
-     publishColor: publishColor,
      getRecord: getRecord,
      getRecords: getRecords,
-     updateRecord: updateRecord
+     updateRecord: updateRecord,
+     publish: publish,
+     restart: restart
 };
 
 var ballHandlers = [];
@@ -26,13 +36,6 @@ var ballHandlers = [];
 var fs = require('fs');
 var path = require('path');
 var normalizedPath = path.join(__dirname, 'ball-handlers');
-
-
-// var MQTT_CLIENT_NAME = 'accelerationTest';
-var MQTT_CLIENT_NAME = 'bowling';
-// var MQTT_CLIENT_NAME = 'proximityTest';
-// var MQTT_CLIENT_NAME = 'randomColor';
-// var MQTT_CLIENT_NAME = 'virus';
 
 var ballHandler = require('./ball-handlers/' + MQTT_CLIENT_NAME);
 if (!ballHandler.getFilters) {
@@ -68,29 +71,30 @@ function onConnect() {
 
     if (ballHandler.init)
         ballHandler.init();
-    // loop();
+
+    loop();
 }
+
+var iterator = updateOneBall();
 
 function loop() {
     var numBalls = _.size(balls) || 1;
-    var period = 2000 / numBalls;
+    var period = BALL_UPDATE_INTERVAL / numBalls;
 
-    var iterator = updateOneBall();
     iterator.next();
     setTimeout(loop, period);
 }
 
 function* updateOneBall() {
-var i = 1;
-while (true) { console.log(i++); yield;}
+// var i = 1;
+// while (true) { console.log(i++); yield;}
     while (true) {
         if (_.isEmpty(balls))
             yield;
         else {
             for (var id in balls) {
-console.log(id);
                 if (balls.hasOwnProperty(id)) {
-                    // publishColor(id, balls[id].color);
+                    pushColor(id, balls[id].color);
                     yield;
                 }
             }
@@ -118,8 +122,13 @@ function ballManager(topic, message) {
         ballHandler.update(ballId);
 }
 
+function restart() {
+    if (ballHandler.restart)
+        ballHandler.restart();
+}
+
 // forcefully publish the color without updating the ball
-function publishColor(ballId, ballColor) {
+function pushColor(ballId, ballColor) {
     if (client) {
         client.publish(publishToTopic + ballId,
             color.getPublishableColor(ballId, ballColor),
@@ -127,13 +136,22 @@ function publishColor(ballId, ballColor) {
     }
 }
 
+function pushAllColor() {
+    _.forOwn(balls, function(ball, id) {
+        pushColor(id, ball.color);
+    });
+}
+
 function changeColor(ballId, ballColor) {
     for (var i = 0; i < ballColor.length; ++i) {
         ballColor[i] = Math.min(ballColor[i], 255);
         ballColor[i] = Math.max(ballColor[i], 0);
     }
+    if (!balls[ballId]) {
+        balls[ballId] = new Ball(ballColor, ballId, ballHandler.getFilters);
+    }
     balls[ballId].updateColor(ballColor);
-    publishColor(ballId, ballColor);
+    // pushColor(ballId, ballColor);
 }
 
 function getRecord(key) {
@@ -147,7 +165,7 @@ function getRecords() {
 function updateRecord(key, record) {
     records[key] = record;
     // write to file
-    var text = JSON.stringify(record);
+    var text = JSON.stringify(records);
     fs.writeFile('leaderboard.txt', text, function(err) {
         if (err) {
             console.log(err);
@@ -171,4 +189,11 @@ function readRecord() {
             console.error(ex);
         }
     });
+}
+
+function publish(topic, message) {
+    // this is super ugly, as it is hard to track who publishes to what
+    if (client) {
+        client.publish(topic, message);
+    }
 }
