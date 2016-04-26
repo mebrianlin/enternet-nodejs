@@ -4,7 +4,7 @@ var path = require('path');
 var fs = require('fs');
 
 module.exports = {
-    enabled: true,
+    // enabled: true,
     connect: connect,
     end: end
 };
