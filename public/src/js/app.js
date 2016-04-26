@@ -9,5 +9,9 @@ angular.module('iotApp', [
     'ballsCtrl',
     'triangleCtrl',
     'recordsCtrl',
-    'simonCtrl'
+    'simonCtrl',
+    'virusCtrl',
+    'bowlingCtrl',
+    'randomColorCtrl',
+    'noColorCtrl'
 ]);

@@ -35,6 +35,22 @@ angular.module('appRoutes', [])
         templateUrl: 'views/simon.html',
         controller: 'simonController'
     })
+    .when('/virus', {
+        templateUrl: 'views/mainBody.html',
+        controller: 'virusController'
+    })
+    .when('/bowling', {
+        templateUrl: 'views/mainBody.html',
+        controller: 'bowlingController'
+    })
+    .when('/randomcolor', {
+        templateUrl: 'views/mainBody.html',
+        controller: 'randomColorController'
+    })
+    .when('/nocolor', {
+        templateUrl: 'views/mainBody.html',
+        controller: 'noColorController'
+    })
     .otherwise({
         templateUrl: 'views/error.html'
     });

@@ -9,7 +9,7 @@ angular.module('recordsCtrl', [])
         $scope.records = data.data.acceleration;
     });
     var client = mqtt.connect(url, {
-        clientId: 'frontend_recordsCtrl'
+        clientId: 'frontend_recordsCtrl' + Math.random().toString().slice(-6)
     });
 
     client.on('connect', function(connack) {
@@ -24,5 +24,11 @@ console.log(data);
             $scope.rank = data.rank;
             $scope.records = data.records;
         });
+    });
+
+    $scope.$on('$destroy', function() {
+        if (client) {
+            client.end();
+        }
     });
 }]);

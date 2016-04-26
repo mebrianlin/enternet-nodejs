@@ -5,19 +5,28 @@ var color = require('../../color');
 var ballManager = require('../ballManagerClient');
 
 module.exports = {
-     init: init
+     init: init,
+     deinit: deinit
 };
 
 var MAX_INDEX = 5;
 var idx = 1;
+var refreshIntervalId;
 var c = color.getRandomColor();
 
 function init() {
+    // don't init twice
+    if (refreshIntervalId)
+        return;
 
-setInterval(function() {
-    changeColor();
-}, 400);
+    refreshIntervalId = setInterval(function() {
+        changeColor();
+    }, 400);
+}
 
+function deinit() {
+    clearInterval(refreshIntervalId);
+    refreshIntervalId = null;
 }
 
 function changeColor() {

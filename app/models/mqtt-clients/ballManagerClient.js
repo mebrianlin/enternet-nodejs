@@ -2,6 +2,7 @@ var mqtt = require('mqtt');
 var _ = require('lodash');
 var fs = require('fs');
 
+var activityManager = require('./activityManagerClient');
 var Ball = require('../ball');
 var color = require('../color');
 var logger = require('../logger');
@@ -9,14 +10,6 @@ var logger = require('../logger');
 var subscribeToTopic = 'ball/put/#';
 var publishToTopic = 'ball/get';
 var BALL_UPDATE_INTERVAL = 400; // default to 200
-
-var MQTT_CLIENT_NAME = 'noColor';
-// var MQTT_CLIENT_NAME = 'accelerationTest';
-// var MQTT_CLIENT_NAME = 'bowling';
-// var MQTT_CLIENT_NAME = 'proximityTest';
-// var MQTT_CLIENT_NAME = 'randomColor';
-// var MQTT_CLIENT_NAME = 'simon';
-// var MQTT_CLIENT_NAME = 'virus';
 
 module.exports = {
      enabled: true,
@@ -27,20 +20,8 @@ module.exports = {
      getRecord: getRecord,
      getRecords: getRecords,
      updateRecord: updateRecord,
-     publish: publish,
-     restart: restart
+     publish: publish
 };
-
-var ballHandlers = [];
-// connect all the mqtt clients
-var fs = require('fs');
-var path = require('path');
-var normalizedPath = path.join(__dirname, 'ball-handlers');
-
-var ballHandler = require('./ball-handlers/' + MQTT_CLIENT_NAME);
-if (!ballHandler.getFilters) {
-    logger.info('Using default filters for the balls');
-}
 
 var client;
 var balls = {};
@@ -57,7 +38,7 @@ function connect(url, options) {
     client = mqtt.connect(url, options);
 
     client.on('connect', onConnect);
-    client.on('message', ballManager);
+    client.on('message', updateBallData);
 }
 
 function end() {
@@ -68,24 +49,20 @@ function end() {
 
 function onConnect() {
     client.subscribe(subscribeToTopic);
-
-    if (ballHandler.init)
-        ballHandler.init();
-
     loop();
 }
 
-var iterator = updateOneBall();
+var ballColorUpdater = updateBallColor();
 
 function loop() {
     var numBalls = _.size(balls) || 1;
     var period = BALL_UPDATE_INTERVAL / numBalls;
 
-    iterator.next();
+    ballColorUpdater.next();
     setTimeout(loop, period);
 }
 
-function* updateOneBall() {
+function* updateBallColor() {
 // var i = 1;
 // while (true) { console.log(i++); yield;}
     while (true) {
@@ -102,29 +79,22 @@ function* updateOneBall() {
     }
 }
 
-function ballManager(topic, message) {
+function updateBallData(topic, message) {
     var str = message.toString();
-// console.log(str);
+
     // TODO: forcefully fix malformed JSON, should fix it from the device side
     str = str.replace(' }}', '\"}}');
     var ballData = JSON.parse(str);
-
     var ballId = ballData.id;
+
     if (!balls[ballId]) {
-        balls[ballId] = new Ball(color.Red, ballId, ballHandler.getFilters);
+        balls[ballId] = new Ball(color.Red, ballId,
+            activityManager.getCurrentActivity().getFilters);
         // synchronoize the color on initializatoin
         changeColor(ballId, color.Red);
     }
 
     balls[ballId].updateMeasurement(ballData);
-
-    if (ballHandler.update)
-        ballHandler.update(ballId);
-}
-
-function restart() {
-    if (ballHandler.restart)
-        ballHandler.restart();
 }
 
 // forcefully publish the color without updating the ball
@@ -148,7 +118,8 @@ function changeColor(ballId, ballColor) {
         ballColor[i] = Math.max(ballColor[i], 0);
     }
     if (!balls[ballId]) {
-        balls[ballId] = new Ball(ballColor, ballId, ballHandler.getFilters);
+        balls[ballId] = new Ball(ballColor, ballId,
+            activityManager.getCurrentActivity().getFilters);
     }
     balls[ballId].updateColor(ballColor);
     // pushColor(ballId, ballColor);

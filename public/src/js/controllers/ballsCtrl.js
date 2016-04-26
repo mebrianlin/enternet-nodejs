@@ -119,7 +119,8 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
     renderCharts();
     var t = 0;
 
-    $interval(function() {
+
+    var updateChartId = $interval(function() {
         $http.get('/api/balls/get')
         .then(function(data) {
             var balls = data.data;
@@ -166,6 +167,12 @@ console.log(ball.color);
             renderCharts();
         });
     }, updateInterval);
+
+    $scope.$on('$destroy', function() {
+        if (updateChartId) {
+            $interval.cancel(updateChartId);
+        }
+    });
 
     function renderCharts() {
         for (var i = 0; i < $scope.charts.length; ++i) {

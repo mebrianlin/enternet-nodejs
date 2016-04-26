@@ -1,5 +1,6 @@
 var csv = require('./models/csv');
 var config = require('./config');
+var activityManager = require('./models/mqtt-clients/activityManagerClient');
 var ballHandler = require('./models/mqtt-clients/ballManagerClient');
 
 module.exports = function(app) {
@@ -29,9 +30,9 @@ module.exports = function(app) {
         res.send(records);
     });
 
-    app.get('/api/restart', function(req, res) {
-        ballHandler.restart();
-        res.send('Restarted');
+    app.get('/api/activity/change/:name', function(req, res) {
+        var activityName = req.params.name;
+        res.send(activityManager.changeActivity(activityName));
     });
 
     // frontend routes =========================================================

@@ -43,23 +43,10 @@
                 <div class="navbar-header">
                     <a class="navbar-brand" href="/">EnterNet IoT</a>
                 </div>
-                <ul class="nav navbar-nav">
-                    <li><a href="/http">HTTP</a></li>
-                </ul>
-                <ul class="nav navbar-nav">
-                    <li><a href="/mqtt">MQTT</a></li>
-                </ul>
-                <ul class="nav navbar-nav">
-                    <li><a href="/wifi">WiFi</a></li>
-                </ul>
-                <ul class="nav navbar-nav">
-                    <li><a href="/balls">Balls</a></li>
-                </ul>
-                <ul class="nav navbar-nav">
-                    <li><a href="/records">Records</a></li>
-                </ul>
-                <ul class="nav navbar-nav">
-                    <li><a href="/simon">Simon</a></li>
+                <ul class="nav navbar-nav" ng-repeat="t in tabs">
+                    <li ng-click="changeActivity(t.activity)">
+                        <a ng-href="{{t.link}}">{{t.title}}</a>
+                    </li>
                 </ul>
             </nav>
             <!-- ANGULAR DYNAMIC CONTENT -->

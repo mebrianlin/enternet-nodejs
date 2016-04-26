@@ -8,7 +8,7 @@ var kalman1d = require('../../kalman').kalman1d;
 module.exports = {
     init: init,
     getFilters: getFilters,
-    restart: restart
+    deinit: deinit
 };
 
 var virus = {};
@@ -17,20 +17,27 @@ var normalBalls = {};
 // detectVirusFunction id
 var detectVirusFunctionId;
 
+var running = false;
+
 function init() {
+    running = true;
     setTimeout(startGame, 1000);
+}
+
+function deinit() {
+    running = false;
+    clearInterval(detectVirusFunctionId);
+    detectVirusFunctionId = null;
 }
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function restart() {
-    startGame();
-}
-
 function startGame(){
-    clearInterval(detectVirusFunctionId);
+    if (detectVirusFunctionId)
+        return;
+
     // var virusId = Object.keys(balls)[getRandomInt(0, _.size(balls))];
     var balls = ballManager.getBalls();
     var virusId = _.chain(balls).keys().sample().value();
@@ -59,6 +66,12 @@ function startGame(){
 var timeThreshold = 1500;
 
 function detectVirus(){
+    if (!running) {
+        clearInterval(detectVirusFunctionId);
+        detectVirusFunctionId = null;
+        return;
+    }
+
     var balls = ballManager.getBalls();
     var newBalls = {};
     _.forOwn(balls, function(ball, id) {
