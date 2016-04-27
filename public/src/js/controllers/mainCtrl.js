@@ -9,7 +9,7 @@ angular.module('mainCtrl', ['ui.bootstrap'])
         { link: '/mqtt', title: 'MQTT' },
         { link: '/wifi', title: 'WiFi' },
         { link: '/balls', title: 'Balls' },
-        { link: '/records', title: 'Records' },
+        { link: '/records', title: 'Records', activity: 'accelerationTest' },
         { link: '/simon', title: 'Simon', activity: 'simon' },
         { link: '/virus', title: 'Virus', activity: 'virus' },
         { link: '/bowling', title: 'Bowling', activity: 'bowling' },

@@ -21,7 +21,7 @@ function init() {
 
     refreshIntervalId = setInterval(function() {
         changeColor();
-    }, 400);
+    }, 1000);
 }
 
 function deinit() {
@@ -30,14 +30,14 @@ function deinit() {
 }
 
 function changeColor() {
-    if (idx == MAX_INDEX) {
-        c = color.getRandomColor();
-    }
-    idx = (idx % MAX_INDEX) + 1;
-    ballManager.changeColor(idx, c);
-
-    // for (var i = 1; i <= MAX_INDEX; ++i) {
-    //     client.publish(publishToTopic,
-    //         color.getPublishableColor(i, c));
+    // if (idx == MAX_INDEX) {
+    //     c = color.getRandomColor();
     // }
+    // idx = (idx % MAX_INDEX) + 1;
+    // ballManager.changeColor(idx, c);
+
+    c = color.getRandomColor();
+    for (idx = 1; idx <= MAX_INDEX; ++idx) {
+        ballManager.changeColor(idx, c);
+    }
 }

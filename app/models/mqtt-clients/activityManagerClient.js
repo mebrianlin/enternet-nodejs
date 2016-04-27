@@ -7,8 +7,8 @@ var logger = require('../logger');
 
 var subscribeToTopic = 'ball/put/#';
 
-var INIT_CLIENT_NAME = 'noColor';
-// var INIT_CLIENT_NAME = 'accelerationTest';
+// var INIT_CLIENT_NAME = 'noColor';
+var INIT_CLIENT_NAME = 'accelerationTest';
 // var INIT_CLIENT_NAME = 'bowling';
 // var INIT_CLIENT_NAME = 'proximityTest';
 // var INIT_CLIENT_NAME = 'randomColor';

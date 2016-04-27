@@ -55,11 +55,15 @@ function onConnect() {
 var ballColorUpdater = updateBallColor();
 
 function loop() {
-    var numBalls = _.size(balls) || 1;
-    var period = BALL_UPDATE_INTERVAL / numBalls;
-
-    ballColorUpdater.next();
+    var period = BALL_UPDATE_INTERVAL;
+    pushAllColor();
     setTimeout(loop, period);
+
+    // var numBalls = _.size(balls) || 1;
+    // var period = BALL_UPDATE_INTERVAL / numBalls;
+
+    // ballColorUpdater.next();
+    // setTimeout(loop, period);
 }
 
 function* updateBallColor() {
