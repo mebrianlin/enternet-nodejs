@@ -4,7 +4,7 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
     var rssiData = [];
     var rssiData2 = [];
     var updateInterval = 100;
-    var LENGTH = 50;
+    var LENGTH = 20;
 
     var rssiMetaData = {
         id: [
@@ -109,8 +109,8 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
             title: "m/s^2",
             interlacedColor: "#F8F1E4",
             // tickLength: 10,
-            minimum: 0,
-            maximum: 20,
+            minimum: 5,
+            maximum: 15,
             includeZero: false
         },
         data: accelerationData
@@ -119,60 +119,47 @@ angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
     renderCharts();
     var t = 0;
 
+    $scope.$watch(
+        function(scope) {
+            return scope.ballData;
+        },
+        function(newValue, oldValue) {
+            updateChartData(newValue);
+            renderCharts();
+        }
+    );
 
-    var updateChartId = $interval(function() {
-        $http.get('/api/balls/get')
-        .then(function(data) {
-            var balls = data.data;
+    function updateChartData(balls) {
+        if (_.isEmpty(balls))
+            return;
 
-            if (_.isEmpty(balls))
+        ++t; // advance the time
+        _.forEach(rssiMetaData.id, function(id) {
+            if (_.isEmpty(balls[id.source]))
                 return;
 
-            // convert the color to css style
-            _.forOwn(balls, function(ball, id) {
-                var color = ball.color;
-                ball.color = 'rgb(' + color[0] + ',' +
-                    color[1] + ',' + color[2] + ')';
-console.log(ball.color);
+            var rssiData = rssiMetaData.dataPoints[id.source][id.target];
+            if (rssiData.length > LENGTH)
+                rssiData.shift();
+            rssiData.push({
+                x: t,
+                y: balls[id.source].distances[id.target]
             });
-            $scope.ballData = balls;
-
-            ++t; // advance the time
-            _.forEach(rssiMetaData.id, function(id) {
-                if (_.isEmpty(balls[id.source]))
-                    return;
-
-                var rssiData = rssiMetaData.dataPoints[id.source][id.target];
-                if (rssiData.length > LENGTH)
-                    rssiData.shift();
-                rssiData.push({
-                    x: t,
-                    y: balls[id.source].distances[id.target]
-                });
-            });
-
-            _.forEach(accelerationMetaData.id, function(id) {
-                if (_.isEmpty(balls[id]))
-                    return;
-
-                var accelerationData = accelerationMetaData.dataPoints[id];
-                if (accelerationData.length > LENGTH)
-                    accelerationData.shift();
-                accelerationData.push({
-                    x: t,
-                    y: balls[id].acceleration
-                });
-            });
-
-            renderCharts();
         });
-    }, updateInterval);
 
-    $scope.$on('$destroy', function() {
-        if (updateChartId) {
-            $interval.cancel(updateChartId);
-        }
-    });
+        _.forEach(accelerationMetaData.id, function(id) {
+            if (_.isEmpty(balls[id]))
+                return;
+
+            var accelerationData = accelerationMetaData.dataPoints[id];
+            if (accelerationData.length > LENGTH)
+                accelerationData.shift();
+            accelerationData.push({
+                x: t,
+                y: balls[id].acceleration
+            });
+        });
+    }
 
     function renderCharts() {
         for (var i = 0; i < $scope.charts.length; ++i) {
@@ -183,15 +170,6 @@ console.log(ball.color);
     $scope.changeColor = function() {
         throw new Error('Color change is not implemented.');
     };
-
-    $scope.$watch(
-        function(scope) {
-            return scope.ballColor;
-        },
-        function(newValue, oldValue) {
-            console.log(oldValue, newValue);
-        }
-    );
 
     $scope.$on('colorpicker-selected', function(event, dataObject) {
         console.log(dataObject.name);

@@ -1,27 +1,10 @@
 <div class="row">
-    <div class="col-sm-10">
-        <div class="line-chart">
-            <div id="rssiChart" style="width: 100%; height:300px;"></div>
-            <div id="accelerationChart" style="width: 100%; height:300px;"></div>
+    <div class="line-chart">
+        <div class="col-sm-7">
+            <div id="rssiChart" style="width: 100%; height:400px;"></div>
         </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="list-group col-sm-offset-2">
-            <a class="list-group-item" href="#"
-                ng-repeat="(id, ball) in ballData">
-                <h4 class="list-group-item-heading">{{id}}</h4>
-                <p class="list-group-item-text" ng-style="{ 'color': ball.color }">
-                    <div ng-repeat="(otherId, d) in ball.distances">
-                        {{otherId}}: {{d | number: 4}}
-                    </div>
-                    <div ng-repeat="(otherId, r) in ball.rssi">
-                        {{otherId}}: {{r}}
-                    </div>
-                    <!-- {{ball.distances | json: spacing}} -->
-                    {{ball.acceleration}}
-                    {{ball.neighbors| json: spacing}}
-                </p>
-            </a>
+        <div class="col-sm-5">
+            <div id="accelerationChart" style="width: 100%; height:400px;"></div>
         </div>
     </div>
 </div>

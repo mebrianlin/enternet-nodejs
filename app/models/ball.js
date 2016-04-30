@@ -39,7 +39,8 @@ function Ball(color, id, getFilters) {
     };
     this.affectingTimestamp = 0;
 
-    this.neighbors = new Set();
+    // this.neighbors = new Set();
+    this.neighbors = {};
 }
 
 Ball.prototype.updateMeasurement = function(data) {
@@ -61,6 +62,7 @@ Ball.prototype.updateMeasurement = function(data) {
         }
 
         // if the rssi value is not valid, don't update it
+        // this will also exclude the possibility of updating with self
         if (!rssi.isValid(value))
             return;
 
@@ -80,13 +82,12 @@ Ball.prototype.updateMeasurement = function(data) {
 
             self.distances[id] = filteredDistance;
 
-
             if (0 < filteredDistance &&
                 filteredDistance < NEAR_THRESHOLD_LOW) {
-                self.neighbors.add(id);
+                self.neighbors[id] = true;
             }
             else if (filteredDistance > NEAR_THRESHOLD_HIGH) {
-                self.neighbors.delete(id);
+                delete self.neighbors[id];
             }
         }
 
@@ -99,11 +100,8 @@ Ball.prototype.updateMeasurement = function(data) {
 };
 
 Ball.prototype.isNeighbor = function(otherBallId) {
-    return this.neighbors.has(otherBallId);
-};
-
-Ball.prototype.getNeighbors = function() {
-    return this.neighbors;
+    // return this.neighbors.has(otherBallId);
+    return this.neighbors[otherBallId];
 };
 
 Ball.prototype.getDistance = function(otherBallId) {

@@ -1,6 +1,8 @@
 angular.module('mainCtrl', ['ui.bootstrap'])
 .controller('mainController', ['$scope', '$interval', '$http',
     function($scope, $interval, $http) {
+    var updateInterval = 200;
+
     $scope.title = 'EnterNet IoT';
     $scope.tagline = 'Let the game begin!';
 
@@ -22,4 +24,25 @@ angular.module('mainCtrl', ['ui.bootstrap'])
             $http.get('/api/activity/change/' + name);
         }
     };
+
+    var updateBallId = $interval(function() {
+        $http.get('/api/balls/get')
+        .then(function(data) {
+            var balls = data.data;
+
+            // convert the color to css style
+            _.forOwn(balls, function(ball, id) {
+                var color = ball.color;
+                ball.color = 'rgb(' + color[0] + ',' +
+                    color[1] + ',' + color[2] + ')';
+            });
+            $scope.ballData = balls;
+        });
+    }, updateInterval);
+
+    $scope.$on('$destroy', function() {
+        if (updateBallId) {
+            $interval.cancel(updateBallId);
+        }
+    });
 }]);

@@ -12,8 +12,8 @@ module.exports = {
     getPublishableColor: getPublishableColor
 };
 
-var COLOR_MAX = 100;
-var COLOR_MIN = 0;
+var COLOR_MAX = 255;
+var COLOR_MIN = 100;
 
 function getRandomColor() {
     return [

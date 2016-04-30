@@ -1,17 +1,23 @@
 var mqtt = require('mqtt');
 var _ = require('lodash');
 
+var activityManager = require('../activityManager');
+
 var Ball = require('../ball');
 var color = require('../color');
+var logger = require('../logger');
 
 var subscribeToTopic = 'ball/put/#';
 var publishToTopic = 'ball/get';
 
+var BALL_UPDATE_INTERVAL = 200; // default to 200
+
 module.exports = {
-     // enabled: true,
+     enabled: true,
      connect: connect,
      end: end,
-     getBalls: getBalls
+     getBalls: getBalls,
+     changeColor: changeColor
 };
 
 var client;
@@ -36,6 +42,34 @@ function end() {
 
 function onConnect() {
     client.subscribe(subscribeToTopic);
+    activityManager.init();
+    setInterval(loop, BALL_UPDATE_INTERVAL);
+}
+
+var ballColorUpdater = updateBallColor();
+
+function loop() {
+    // update activity
+    activityManager.update(balls);
+
+    publishAllColor();
+}
+
+function* updateBallColor() {
+// var i = 1;
+// while (true) { console.log(i++); yield;}
+    while (true) {
+        if (_.isEmpty(balls))
+            yield;
+        else {
+            for (var id in balls) {
+                if (balls.hasOwnProperty(id)) {
+                    publishColor(id, balls[id].color);
+                    yield;
+                }
+            }
+        }
+    }
 }
 
 function ballHandler(topic, message) {
@@ -47,56 +81,45 @@ function ballHandler(topic, message) {
     var ballData = JSON.parse(str);
 
     var ballId = ballData.id;
+    updateBall(ballId, ballData);
+}
+
+function updateBall(ballId, ballData) {
     if (!balls[ballId]) {
-        balls[ballId] = new Ball(color.Black);
+        balls[ballId] = new Ball(color.Red, ballId,
+            activityManager.getCurrentActivity().getFilters);
+        // synchronoize the color on initializatoin
+        changeColor(ballId, color.Red);
     }
 
     balls[ballId].updateMeasurement(ballData);
-
-
-
-
-    var values = _.values(balls[ballId].distances);
-    var maxDistance = 0;
-    for (var i = 0; i < values.length; ++i) {
-        if (maxDistance < values[i]) {
-            maxDistance = values[i];
-        }
-    }
-    // console.log(maxDistance);
-    if (maxDistance < 0.5)
-        changeColor(ballId, color.Green);
-    else if (maxDistance < 1.7)
-        changeColor(ballId, color.Blue);
-    else
-        changeColor(ballId, color.Red);
-
-
-
-    // var THRESHOLD = -35;
-    // // var maxRssi = _.maxBy(_.values(ballData.rssi));
-    // var maxRssi = -100;
-
-    // var values = _.values(ballData.rssi);
-
-    // for (var i = 0; i < values.length; ++i) {
-    //     if (maxRssi < values[i] && values[i] < 0) {
-    //         maxRssi = values[i];
-    //     }
-    //     if (THRESHOLD < maxRssi) {
-    //         changeColor(ballId, color.Green);
-    //         return;
-    //     }
-    // }
-    // if (maxRssi < -45)
-    //     changeColor(ballId, color.Red);
-    // else
-    //     changeColor(ballId, color.Blue);
 }
 
 function changeColor(ballId, ballColor) {
+    for (var i = 0; i < ballColor.length; ++i) {
+        ballColor[i] = Math.max(Math.min(ballColor[i], 255), 0);
+    }
+    if (!balls[ballId]) {
+        balls[ballId] = new Ball(ballColor, ballId,
+            activityManager.getCurrentActivity().getFilters);
+    }
     balls[ballId].updateColor(ballColor);
+}
 
-    client.publish(publishToTopic,
-        color.getPublishableColor(ballId, ballColor));
+// forcefully publish the color without updating the ball
+function publishColor(ballId, ballColor) {
+    if (client) {
+        client.publish(publishToTopic + ballId,
+            color.getPublishableColor(ballId, ballColor),
+            { qos: 1 });
+    }
+    else {
+        logger.error('MQTT client not connected');
+    }
+}
+
+function publishAllColor() {
+    _.forOwn(balls, function(ball, id) {
+        publishColor(id, ball.color);
+    });
 }

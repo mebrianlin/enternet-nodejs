@@ -49,6 +49,36 @@
                     </li>
                 </ul>
             </nav>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        <td ng-repeat="(id, ball) in ballData">
+                            <div class="ball-list-item number-circle"
+                                 ng-style="{'background-color': ball.color}">
+                                {{id}}
+                            </div>
+                            <!-- <div class="horizontal-ball-list">
+                                <h4 class="horizontal-ball-list">{{id}}</h4>
+                            </div> -->
+                            <div class="ball-list-item">
+                                <div ng-repeat="(otherId, d) in ball.distances">
+                                    {{otherId}}: {{d | number: 2}} ({{ball.rssi[otherId]}})
+                                </div>
+                                <div>a: {{ball.acceleration}}</div>
+                                <div>nearby:</div>
+                                <span ng-repeat="(otherId, n) in ball.neighbors">
+                                        {{otherId}}
+                                </span>
+                            </div>
+                            <!-- <svg height="50" width="50">
+                                <circle cx="25" cy="25" r="18" stroke="black" stroke-width="2" ng-attr-fill="{{ball.color}}"/>
+                            </svg> -->
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
             <!-- ANGULAR DYNAMIC CONTENT -->
             <div ng-view></div>
 

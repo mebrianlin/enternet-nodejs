@@ -9,10 +9,10 @@ var logger = require('../logger');
 
 var subscribeToTopic = 'ball/put/#';
 var publishToTopic = 'ball/get';
-var BALL_UPDATE_INTERVAL = 400; // default to 200
+var BALL_UPDATE_INTERVAL = 200; // default to 200
 
 module.exports = {
-     enabled: true,
+     // enabled: true,
      connect: connect,
      end: end,
      getBalls: getBalls,

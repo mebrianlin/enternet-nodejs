@@ -1,9 +1,8 @@
 var _ = require('lodash');
 
-var ballManager = require('../ballManagerClient');
-var color = require('../../color');
-var noFilter = require('../../filters/noFilter');
-var kalman1d = require('../../kalman').kalman1d;
+var color = require('../color');
+var noFilter = require('../filters/noFilter');
+var kalman1d = require('../kalman').kalman1d;
 
 module.exports = {
     update: update,
@@ -18,17 +17,21 @@ var colors = [
     color.Purple
 ];
 
-function update(ballId) {
+function update(balls) {
+    _.forOwn(balls, function(ball, id) {
+        checkNeighbor(balls, id);
+    });
+
+}
+
+function checkNeighbor(balls, ballId) {
     var numNeighbor = 0;
     try {
-        var balls = ballManager.getBalls();
-
         _.forOwn(balls, function(ball, id) {
             if (ball.isNeighbor(ballId) || balls[ballId].isNeighbor(id))
                 ++numNeighbor;
         });
-        ballManager.changeColor(ballId, colors[numNeighbor]);
-
+        balls[ballId].updateColor(colors[numNeighbor]);
     }
     catch (ex) {
 
