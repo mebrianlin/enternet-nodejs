@@ -1,6 +1,5 @@
-angular.module('simonCtrl', [])
+app.register
 .controller('simonController', ['$scope', '$http', '$interval', function($scope, $http, $interval) {
-
     // this is ugly, and is just for soft
     // code is duplicated here, should browserify color.js
     // or call the server to get the required colors

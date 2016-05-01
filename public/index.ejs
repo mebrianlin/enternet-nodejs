@@ -13,8 +13,11 @@
         <link rel="stylesheet" href="libs/n3-charts/build/LineChart.min.css">
         <link rel="stylesheet" href="dist/css/style.min.css"> <!-- custom styles -->
 
+        <script src="libs/scriptjs/dist/script.min.js"></script>
         <!-- JS -->
-        <script src="libs/angular/angular.min.js"></script>
+        <script src="libs/angular/angular.js"></script>
+        <!-- do not use min.js if angular gives weird error messages -->
+        <!-- <script src="libs/angular/angular.min.js"></script> -->
         <script src="libs/angular-route/angular-route.min.js"></script>
         <script src="libs/angular-bootstrap/ui-bootstrap.min.js"></script>
         <script src="libs/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js"></script>
@@ -43,9 +46,26 @@
                 <div class="navbar-header">
                     <a class="navbar-brand" href="/">EnterNet IoT</a>
                 </div>
-                <ul class="nav navbar-nav" ng-repeat="t in tabs">
-                    <li ng-click="changeActivity(t.activity)">
+                <ul class="nav navbar-nav">
+                    <li><a ng-href="/http">HTTP</a></li>
+                    <li><a ng-href="/mqtt">MQTT</a></li>
+                    <li><a ng-href="/wifi">WiFi</a></li>
+                    <li><a ng-href="/balls">Balls</a></li>
+                    <!-- <li ng-repeat="t in tabs"
+                        ng-click="changeActivity(t.activity)">
                         <a ng-href="{{t.link}}">{{t.title}}</a>
+                    </li> -->
+                    <li class="btn-group" type="button" uib-dropdown>
+                        <a href="#" id="single-button" uib-dropdown-toggle>
+                            Activities <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" uib-dropdown-menu role="menu"
+                            aria-labelledby="single-button">
+                            <li ng-repeat="t in tabs" role="menuitem"
+                                ng-click="changeActivity(t.activity)">
+                                <a ng-href="{{t.link}}">{{t.title}}</a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </nav>

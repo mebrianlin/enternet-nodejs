@@ -32,16 +32,29 @@ module.exports = function(grunt) {
             options: {
                 "esversion": 6
             },
-            all: ['Gruntfile.js', 'server.js', 'public/src/js/**/*.js', 'app/**/*.js']
+            all: ['Gruntfile.js', 'server.js', 'public/src/js/**/*.js', 'public/src/activity/js/**/*.js', 'app/**/*.js']
         },
 
         // take all the js files and minify them into app.min.js
         uglify: {
+            // options: {
+            //     mangle: false
+            // },
             build: {
                 files: {
                     'public/dist/js/app.min.js': ['public/src/js/**/*.js', 'public/src/js/*.js'],
                     'public/dist/js/bundle.min.js': 'public/dist/js/bundle.js'
                 }
+            },
+            activity: {
+                files: [{
+                    cwd: 'public/src/activity/js/',
+                    src: ['*.js', '**/*.js'],
+                    dest: 'public/dist/js', // destination folder
+                    expand: true,  // allow dynamic building
+                    flatten: true, // remove all unnecessary nesting
+                    ext: '.min.js' // replace .js to .min.js
+                }]
             }
         },
 

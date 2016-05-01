@@ -1,4 +1,4 @@
-angular.module('noColorCtrl', [])
+app.register
 .controller('noColorController', ['$scope', function($scope) {
     $scope.title = 'No Color';
     $scope.tagline = 'No Color controller';

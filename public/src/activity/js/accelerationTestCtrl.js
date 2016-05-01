@@ -2,8 +2,8 @@
 var url = 'ws://localhost:3000';
 var subscribeToTopic = 'leaderboard/acceleration';
 
-angular.module('recordsCtrl', [])
-.controller('recordsController', ['$scope', '$http', function($scope, $http) {
+app.register
+.controller('accelerationTestController', ['$scope', '$http', function($scope, $http) {
     $http.get('/api/records/get')
     .then(function(data) {
         $scope.records = data.data.acceleration;

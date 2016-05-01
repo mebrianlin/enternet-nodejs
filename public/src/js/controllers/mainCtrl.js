@@ -1,23 +1,33 @@
-angular.module('mainCtrl', ['ui.bootstrap'])
+angular.module('mainCtrl', ['ui.bootstrap', 'ngRoute'])
 .controller('mainController', ['$scope', '$interval', '$http',
     function($scope, $interval, $http) {
+
+        // $scope.simonCtrl = $injector.get('simonCtrl');
+
     var updateInterval = 200;
 
     $scope.title = 'EnterNet IoT';
     $scope.tagline = 'Let the game begin!';
 
-    $scope.tabs = [
-        { link: '/http', title: 'HTTP' },
-        { link: '/mqtt', title: 'MQTT' },
-        { link: '/wifi', title: 'WiFi' },
-        { link: '/balls', title: 'Balls' },
-        { link: '/records', title: 'Records', activity: 'accelerationTest' },
-        { link: '/simon', title: 'Simon', activity: 'simon' },
-        { link: '/virus', title: 'Virus', activity: 'virus' },
-        { link: '/bowling', title: 'Bowling', activity: 'bowling' },
-        { link: '/randomcolor', title: 'Random Color', activity: 'randomColor' },
-        { link: '/nocolor', title: 'No Color', activity: 'noColor' },
-    ];
+    $scope.tabs = [];
+
+    function toSentenceCase(camelCase) {
+        var result = camelCase.replace(/([A-Z])/g, ' $1');
+        // capitalize the first letter
+        return result.charAt(0).toUpperCase() + result.slice(1);
+    }
+
+    $http.get('/api/activity/get')
+    .then(function(data) {
+        var activities = data.data;
+        activities.forEach(function(a) {
+            $scope.tabs.push({
+                link: '/activity/' + a,
+                title: toSentenceCase(a),
+                activity: a
+            });
+        });
+    });
 
     $scope.changeActivity = function(name) {
         if (name) {

@@ -1,9 +1,8 @@
 var csv = require('./models/csv');
 var config = require('./config');
 var activityManager = require('./models/activityManager');
-// var activityManager = require('./models/mqtt-clients/activityManagerClient');
-var ballHandler = require('./models/mqtt-clients/omniscientBallClient');
-// var ballHandler = require('./models/mqtt-clients/ballManagerClient');
+var ballHandler = require('./models/mqtt-clients/enternetBallClient');
+var recordManager = require('./models/mqtt-clients/recordManagerClient');
 
 module.exports = function(app) {
     // server routes ===========================================================
@@ -28,8 +27,12 @@ module.exports = function(app) {
     });
 
     app.get('/api/records/get', function(req, res) {
-        var records = ballHandler.getRecords();
+        var records = recordManager.getRecords();
         res.send(records);
+    });
+
+    app.get('/api/activity/get', function(req, res) {
+        res.send(activityManager.getActivityNames());
     });
 
     app.get('/api/activity/change/:name', function(req, res) {

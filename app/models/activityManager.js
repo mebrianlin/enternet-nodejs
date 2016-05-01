@@ -15,6 +15,7 @@ var INIT_CLIENT_NAME = 'randomColor';
 module.exports = {
      init: init,
      update: update,
+     getActivityNames: getActivityNames,
      getCurrentActivity: getCurrentActivity,
      changeActivity: changeActivity
 };
@@ -43,6 +44,10 @@ else if (ballHandler.init) {
 
 function getCurrentActivity() {
     return ballHandler;
+}
+
+function getActivityNames() {
+    return _.keys(ballHandlers);
 }
 
 function changeActivity(activityName) {
