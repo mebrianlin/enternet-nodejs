@@ -1,3 +1,4 @@
+var path = require('path');
 var config = require('./config');
 var activityManager = require('./models/activityManager');
 var ballHandler = require('./models/mqtt-clients/enternetBallClient');
@@ -24,6 +25,20 @@ module.exports = function(app) {
     app.get('/api/activity/change/:name', function(req, res) {
         var activityName = req.params.name;
         res.send(activityManager.changeActivity(activityName));
+    });
+
+    app.get('/dist/js/*Ctrl.min.js', function(req, res) {
+        console.log(req.method, req.path);
+        res.sendfile('public/dist/js/placeHolderCtrl.min.js');
+    });
+    app.get('/src/activity/views/*.html', function(req, res) {
+        console.log(req.method, req.path);
+        var name = path.basename(req.path, '.html');
+        res.render('src/activity/views/placeHolder', {
+            title: toSentenceCase(name),
+            jsFile: 'public/src/activity/js/' + name + '.js',
+            htmlFile: 'public/src/activity/views/' + name + '.html'
+        });
     });
 
     // frontend routes =========================================================
@@ -67,3 +82,9 @@ module.exports = function(app) {
         });
     });
 };
+
+function toSentenceCase(camelCase) {
+    var result = camelCase.replace(/([A-Z])/g, ' $1');
+    // capitalize the first letter
+    return result.charAt(0).toUpperCase() + result.slice(1);
+}
