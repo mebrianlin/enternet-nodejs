@@ -1,4 +1,3 @@
-var csv = require('./models/csv');
 var config = require('./config');
 var activityManager = require('./models/activityManager');
 var ballHandler = require('./models/mqtt-clients/enternetBallClient');
@@ -8,19 +7,6 @@ module.exports = function(app) {
     // server routes ===========================================================
     // handle things like api calls
     // authentication routes
-    app.get('/api/csv/:data', function(req, res, next) {
-        var data = req.params.data;
-        csv.write(data);
-        res.send(data);
-    });
-
-    app.post('/api/csv/:data', function(req, res, next) {
-        var data = req.params.data;
-        csv.write(data);
-        res.send(data);
-    });
-
-
     app.get('/api/balls/get', function(req, res) {
         var balls = ballHandler.getBalls();
         res.send(balls);

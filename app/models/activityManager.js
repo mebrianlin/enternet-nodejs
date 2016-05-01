@@ -65,7 +65,7 @@ function changeActivity(activityName) {
     if (!ballHandler.getFilters)
         logger.info('Using default filters for the balls');
 
-    return 'Succeeded';
+    return 'Activity changed to ' + activityName;
 }
 
 function init() {

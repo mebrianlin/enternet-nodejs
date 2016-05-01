@@ -8,27 +8,10 @@ module.exports = {
 };
 
 function kalman1d(parameter) {
-    // var q = 0; // process noise covariance
-    // var r = 5; // measurement noise covariance
-    // var x = 0; // value
-    // var p = 0; // estimation error covariance
-    // var k; // kalman gain
-
-    // var self = this;
     var kf = new KalmanFilter(parameter);
 
     function filter(measurement) {
         return kf.filter(measurement);
-//         // prediction update
-//         // omit x = x
-//         p = p + q;
-// // console.log(x, k, measurement);
-//         // measurement update
-//         k = p / (p + r);
-//         x = x + k * (measurement - x);
-//         p = (1 - k) * p;
-
-//         return x;
     }
 
     return {
@@ -148,10 +131,6 @@ function kalman2d() {
 
         x = x.add(K.x(y));
         P = I.subtract(K.x(H)).x(P);
-
-        // Draw our predicted point
-        // var pSize = P.max() * 2000;
-        // var pAlpha = 1 / pSize;
 
         return {
             x: x.e(1, 1),
