@@ -1,4 +1,4 @@
-angular.module('ballsCtrl', ['chart.js', 'n3-line-chart'])
+angular.module('ballsCtrl', [])
 .controller('ballsController', ['$scope', '$http', '$interval', function($scope, $http, $interval) {
 
     var rssiData = [];

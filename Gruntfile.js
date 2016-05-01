@@ -16,14 +16,6 @@ module.exports = function(grunt) {
 
         copy: {
             main: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: 'node_modules/',
-                        src: ['n3-charts/build/**', 'd3/d3.min.js', 'canvasjs/dist/canvasjs.min.js'],
-                        dest: 'public/libs/'
-                    }
-                ]
             }
         },
 
