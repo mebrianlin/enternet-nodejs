@@ -49,7 +49,7 @@
                     </li> -->
                     <li class="btn-group" type="button" uib-dropdown>
                         <a href="#" id="single-button" uib-dropdown-toggle>
-                            Activities <span class="caret"></span>
+                            Applications <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" uib-dropdown-menu role="menu"
                             aria-labelledby="single-button">
@@ -67,7 +67,7 @@
                     <tr>
                         <td ng-repeat="(id, ball) in ballData">
                             <div class="ball-list-item number-circle"
-                                 ng-style="{'background-color': ball.color}">
+                                 ng-style="{'background-color': convertToCssColor(ball.color)}">
                                 {{id}}
                             </div>
                             <!-- <div class="horizontal-ball-list">
@@ -84,7 +84,7 @@
                                 </span>
                             </div>
                             <!-- <svg height="50" width="50">
-                                <circle cx="25" cy="25" r="18" stroke="black" stroke-width="2" ng-attr-fill="{{ball.color}}"/>
+                                <circle cx="25" cy="25" r="18" stroke="black" stroke-width="2" ng-attr-fill="{{convertToCssColor(ball.color)}}"/>
                             </svg> -->
                         </td>
                     </tr>

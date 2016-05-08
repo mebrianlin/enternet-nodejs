@@ -31,6 +31,8 @@ function checkNeighbor(balls, ballId) {
             if (ball.isNeighbor(ballId) || balls[ballId].isNeighbor(id))
                 ++numNeighbor;
         });
+        if (numNeighbor >= colors.length)
+            numNeighbor = color.length - 1;
         balls[ballId].updateColor(colors[numNeighbor]);
     }
     catch (ex) {

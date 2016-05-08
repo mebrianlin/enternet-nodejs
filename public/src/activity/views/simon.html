@@ -1,11 +1,13 @@
 <div class="row" ng-controller="simonController">
-    <div style="
+    <!-- <div style="
     width:50%;
     height:200px;"
     ng-style="{ 'background-color': targetColor }">
-    </div>
-    <button ng-click="getNewTargetColor()">Change Color</button>
-    <br/><br/>
-    <button ng-click="getMinDistanceToOne()">Get Min Distance To 1</button>
-    {{minDistanceToOne}}
+    </div> -->
+    <svg width="100%" height="220">
+        <rect x="25%" width="50%" height="100%" ng-attr-fill="{{targetColor}}"/>
+    </svg>
+    <button type="button" class="btn btn-default" ng-click="getNewTargetColor()">
+        Change Color
+    </button>
 </div>

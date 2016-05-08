@@ -3,7 +3,6 @@ angular.module('ballsCtrl', [])
 
     var rssiData = [];
     var rssiData2 = [];
-    var updateInterval = 100;
     var LENGTH = 20;
 
     var rssiMetaData = {

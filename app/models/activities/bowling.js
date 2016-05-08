@@ -11,6 +11,8 @@ var STATION_ID = 1;
 var MAX_DISTANCE = 1;
 
 function update(balls) {
+    if (_.isEmpty(balls) || !balls[STATION_ID])
+        return;
     _.forOwn(balls, function(ball, id) {
         if (id == STATION_ID)
             ball.updateColor(color.Blue);

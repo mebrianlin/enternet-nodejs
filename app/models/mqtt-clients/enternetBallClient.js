@@ -52,7 +52,8 @@ function loop() {
     // update activity
     activityManager.update(balls);
 
-    publishAllColor();
+    // publishAllColor();
+    ballColorUpdater.next();
 }
 
 function* updateBallColor() {
@@ -77,7 +78,7 @@ function ballHandler(topic, message) {
     // console.log(str);
 
     // TODO: forcefully fix malformed JSON, should fix it from the device side
-    str = str.replace(' }}', '\"}}');
+    // str = str.replace(' }}', '\"}}');
     var ballData = JSON.parse(str);
 
     var ballId = ballData.id;

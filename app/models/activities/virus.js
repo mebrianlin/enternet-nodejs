@@ -18,7 +18,7 @@ var normalBalls = {};
 
 var timeThreshold = 1500;
 
-function init(balls) {
+function init() {
     virus = {};
     affecting = {};
     normalBalls = {};

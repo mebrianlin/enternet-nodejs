@@ -48,9 +48,9 @@ Ball.prototype.updateMeasurement = function(data) {
 
     // TODO: this is because the sensors are sending these data on the rssi
     // this.distances = data.rssi;
-    this.rssi = _.cloneDeep(data.rssi);
+    this.rssi = _.cloneDeep(data.r);
 
-    var distances = data.rssi;
+    var distances = data.r;
 
     _.forOwn(distances, function(value, id) {
         if (!self.filters[id]) {
@@ -96,7 +96,7 @@ Ball.prototype.updateMeasurement = function(data) {
 
     // this.acceleration = this.filters.acceleration.filter(
     //     data.acceleration);
-    this.acceleration = parseFloat(data.acceleration);
+    this.acceleration = parseFloat(data.a);
 };
 
 Ball.prototype.isNeighbor = function(otherBallId) {
@@ -108,7 +108,7 @@ Ball.prototype.getDistance = function(otherBallId) {
     return this.distances[otherBallId];
 };
 
-Ball.prototype.getColor = function(color) {
+Ball.prototype.getColor = function() {
     var c = this.color;
     return [c[0], c[1], c[2]];
 };

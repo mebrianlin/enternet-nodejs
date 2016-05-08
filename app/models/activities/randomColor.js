@@ -21,6 +21,7 @@ function update(balls) {
         _.forOwn(balls, function(ball, id) {
             ball.updateColor(c);
         });
-        last += UPDATE_INTERVAL;
+        while (now - last >= UPDATE_INTERVAL)
+            last += UPDATE_INTERVAL;
     }
 }

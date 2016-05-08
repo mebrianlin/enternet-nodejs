@@ -4,10 +4,10 @@ angular.module('mainCtrl', ['ui.bootstrap', 'ngRoute'])
 
         // $scope.simonCtrl = $injector.get('simonCtrl');
 
-    var updateInterval = 200;
+    var updateInterval = 100;
 
     $scope.title = 'EnterNet IoT';
-    $scope.tagline = 'Let the game begin!';
+    $scope.tagline = '';
 
     $scope.tabs = [];
 
@@ -35,17 +35,15 @@ angular.module('mainCtrl', ['ui.bootstrap', 'ngRoute'])
         }
     };
 
+    $scope.convertToCssColor = function(color) {
+        return 'rgb(' + color[0] + ',' +
+            color[1] + ',' + color[2] + ')';
+    };
+
     var updateBallId = $interval(function() {
         $http.get('/api/balls/get')
         .then(function(data) {
             var balls = data.data;
-
-            // convert the color to css style
-            _.forOwn(balls, function(ball, id) {
-                var color = ball.color;
-                ball.color = 'rgb(' + color[0] + ',' +
-                    color[1] + ',' + color[2] + ')';
-            });
             $scope.ballData = balls;
         });
     }, updateInterval);

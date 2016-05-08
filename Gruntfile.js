@@ -32,14 +32,19 @@ module.exports = function(grunt) {
             // options: {
             //     mangle: false
             // },
+            // build: {
+            //     files: {
+            //         'public/dist/js/app.min.js': ['public/src/js/**/*.js', 'public/src/js/*.js'],
+            //         'public/dist/js/bundle.min.js': 'public/dist/js/bundle.js'
+            //     }
+            // },
             build: {
-                files: {
+                files: [
+                {
                     'public/dist/js/app.min.js': ['public/src/js/**/*.js', 'public/src/js/*.js'],
                     'public/dist/js/bundle.min.js': 'public/dist/js/bundle.js'
-                }
-            },
-            activity: {
-                files: [{
+                },
+                {
                     cwd: 'public/src/activity/js/',
                     src: ['*.js', '**/*.js'],
                     dest: 'public/dist/js', // destination folder
@@ -80,7 +85,7 @@ module.exports = function(grunt) {
                 tasks: ['less', 'cssmin']
             },
             js: {
-                files: ['public/src/js/**/*.js', 'public/src/js/*.js'],
+                files: ['public/src/**/*.js'],
                 tasks: ['jshint', 'browserify', 'uglify']
             }
         },

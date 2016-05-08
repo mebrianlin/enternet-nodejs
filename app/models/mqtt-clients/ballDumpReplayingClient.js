@@ -4,7 +4,7 @@ var path = require('path');
 var fs = require('fs');
 
 module.exports = {
-    enabled: true,
+    // enabled: true,
     connect: connect,
     end: end
 };
@@ -14,7 +14,7 @@ var publishToTopic = 'ball/put/';
 var client;
 var ballsDump = [];
 var intervalId;
-var interval = 50;
+var interval = 200;
 var index = 0;
 
 var rl = readline.createInterface({
